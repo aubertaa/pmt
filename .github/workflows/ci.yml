@@ -50,6 +50,14 @@ jobs:
           name: coverage-report
           path: ./frontend/coverage
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./frontend/coverage/**/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 

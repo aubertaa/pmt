@@ -51,6 +51,7 @@ jobs:
           path: ./frontend/coverage
 
       - name: Upload coverage to Codecov
+        if: false
         uses: codecov/codecov-action@v3
         with:
           files: ./frontend/coverage/**/lcov.info

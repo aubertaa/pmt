@@ -1,4 +1,11 @@
 services:
+  frontend:
+    image: 'pmt-app'
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '4200:4200'
   adminer:
     image: 'adminer'
     restart: always
@@ -14,4 +21,4 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - ../../db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql

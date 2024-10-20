@@ -7,10 +7,10 @@ public interface UserService {
 
     Long saveUser(User user);
     //List<User> getAllUsers();
-    //User getUserById(Long id);
-    //User getUserByUsername(String username);
+    //User getUserById(Long userId);
+    //User getUserByUserName(String userName);
     //User getUserByEmail(String email);
-    //User updateUser(User user, Long id);
+    //User updateUser(User user, Long userId);
     void deleteUser(Long id);
 
 

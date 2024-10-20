@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     public Long saveUser(User user) {
         // return user id after having saved it
         User new_user = userRepository.save(user);
-        return new_user.getId();
+        return new_user.getUserId();
     }
 /*
     @Override
@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User getUserByUserName(String userName) {
+        return userRepository.findByUsername(userName);
     }
 
     @Override

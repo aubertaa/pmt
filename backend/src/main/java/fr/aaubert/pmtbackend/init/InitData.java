@@ -16,7 +16,7 @@ public class InitData implements CommandLineRunner {
         public void run(String... args) throws Exception {
                 //init data
                 User user = new User();
-                user.setUsername("john_doe");
+                user.setUserName("john_doe");
                 user.setEmail("john.doe@example.com");
                 user.setPassword("securepassword");
                 userRepository.save(user);

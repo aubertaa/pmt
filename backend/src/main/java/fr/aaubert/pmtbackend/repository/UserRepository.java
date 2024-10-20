@@ -16,9 +16,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 /*
     @Query("""
                  FROM User
-                 WHERE username = :username
+                 WHERE userName = :userName
             """)
-    User findByUsername(String username);
+    User findByUsername(String userName);
 
     @Query("""
                  FROM User

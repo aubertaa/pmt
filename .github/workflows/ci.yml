@@ -59,8 +59,8 @@ jobs:
 
       - name: Wait for services to be healthy
         run: |
-          while ! docker-compose ps | grep "healthy"; do
-            echo "Waiting for services to be healthy..."
+          while [ $(docker inspect -f '{{.State.Running}}' $(docker-compose ps -q) | grep false | wc -l) -ne 0 ]; do
+            echo "Waiting for services to be running..."
             sleep 10
           done
         working-directory: .

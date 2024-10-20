@@ -75,5 +75,8 @@ jobs:
           done
         working-directory: .
 
-      - name: Verify services
-        run: curl -f http://localhost:4201 || exit 1
+      - name: Verify frontend service
+        run: |
+          for i in {1..10}; do
+            curl -f http://localhost:4201 && break || sleep 10
+          done

@@ -29,7 +29,9 @@ jobs:
           java-version: '17'
           
       - name: Build backend with tests
-        run: chmod +x ./gradlew && ./gradlew clean build -Pspring.profiles.active=dev
+        run: chmod +x ./gradlew && ./gradlew clean build
+        env:
+          SPRING_PROFILES_ACTIVE: dev
         working-directory: ./backend
 
           

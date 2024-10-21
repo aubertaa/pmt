@@ -11,6 +11,19 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "user_entity")
 public class User {
 
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    private Long userId;
+
+    @NotNull(message = "Username is mandatory")
+    private String userName;
+    
+    @NotNull(message = "Email is mandatory")
+    private String email;
+    
+    private String password;
+
     public Long getUserId() {
 		return userId;
 	}
@@ -48,18 +61,5 @@ public class User {
 		return "User [userId=" + userId + ", userName=" + userName + ", email=" + email + ", password=" + password
 				+ "]";
 	}
-
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
-    private Long userId;
-
-    @NotNull(message = "Username is mandatory")
-    private String userName;
-    
-    @NotNull(message = "Email is mandatory")
-    private String email;
-    
-    private String password;
 
 }

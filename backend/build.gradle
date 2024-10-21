@@ -59,3 +59,7 @@ jacocoTestReport {
 		html.required = true
 	}
 }
+
+gradle.projectsEvaluated {
+	applicationDefaultJvmArgs = ["-Dspring.profiles.active=${project.gradle.startParameter.systemPropertiesArgs['spring.profiles.active']}"]
+}

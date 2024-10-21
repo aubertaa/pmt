@@ -41,8 +41,11 @@ dependencies {
 
 test {
 	useJUnitPlatform()
-    systemProperty('spring.profiles.active', 'DEV')
 	finalizedBy jacocoTestReport
+}
+
+tasks.withType(Test) {
+	systemProperty 'spring.profiles.active', 'dev'
 }
 
 jar {
@@ -58,8 +61,4 @@ jacocoTestReport {
 		xml.required = true
 		html.required = true
 	}
-}
-
-gradle.projectsEvaluated {
-	applicationDefaultJvmArgs = ["-Dspring.profiles.active=${project.gradle.startParameter.systemPropertiesArgs['spring.profiles.active']}"]
 }

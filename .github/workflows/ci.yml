@@ -29,7 +29,7 @@ jobs:
           java-version: '17'
           
       - name: Build backend with tests
-        if: false
+        if: false # TODO enable when tests are added / fix h2 db mode on tests runs
         run: chmod +x ./gradlew && ./gradlew clean build -Dspring.profiles.active=dev
         working-directory: ./backend
 
@@ -74,7 +74,7 @@ jobs:
           path: ./frontend/coverage
 
       - name: Upload coverage to Codecov
-        if: false
+        if: false # TODO enable when tests are added
         uses: codecov/codecov-action@v3
         with:
           files: ./frontend/coverage/**/lcov.info

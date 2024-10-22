@@ -91,7 +91,7 @@ jobs:
       - name: Download JAR Artifact
         uses: actions/download-artifact@v4
         with:
-          name: backend/build/libs/pmt-backend-jar
+          name: backend/build/libs/pmtbackend-0.0.1-SNAPSHOT.jar
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

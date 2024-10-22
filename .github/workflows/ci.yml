@@ -115,18 +115,51 @@ jobs:
 
       - name: frontend service
         run: |
+          success=false
           for i in {1..10}; do
-            curl -f http://frontend:4201 && break || sleep 10
+            if curl -f http://localhost:4201; then
+              success=true
+              break
+            else
+              sleep 10
+            fi
           done
+          
+          if [ "$success" = false ]; then
+            echo "Curl failed after 10 attempts"
+            exit 1
+          fi
 
       - name: backend api
         run: |
+          success=false
           for i in {1..10}; do
-            curl -f http://backend:8081/ && break || sleep 10
+            if curl -f http://localhost:8081; then
+              success=true
+              break
+            else
+              sleep 10
+            fi
           done
+          
+          if [ "$success" = false ]; then
+            echo "Curl failed after 10 attempts"
+            exit 1
+          fi
 
       - name: swagger-ui
         run: |
+          success=false
           for i in {1..10}; do
-            curl -f http://backend:8081/swagger-ui/index.html#/user-controller/register && break || sleep 10
+            if curl -f http://localhost:8081/swagger-ui/index.html#/user-controller/register; then
+              success=true
+              break
+            else
+              sleep 10
+            fi
           done
+          
+          if [ "$success" = false ]; then
+            echo "Curl failed after 10 attempts"
+            exit 1
+          fi

@@ -53,5 +53,22 @@ public class UserServiceImplTest {
 
     }
 
+    @Test
+    void testGetUserByUserName() {
+        // Test case 1: Saving a new user
+        User user = new User();
+        user.setUserName("john.doe");
+        user.setEmail("john.doe@example.com");
+        user.setPassword("password");
+        user.setUserId(456L);
+
+        when(userRepository.findByUsername("john.doe")).thenReturn(user);
+
+        User foundUser = userService.getUserByUserName("john.doe");
+        assertEquals(user, foundUser);
+
+    }
+
+
 
 }

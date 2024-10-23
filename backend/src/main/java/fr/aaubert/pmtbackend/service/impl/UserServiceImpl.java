@@ -1,11 +1,14 @@
 package fr.aaubert.pmtbackend.service.impl;
 
+import fr.aaubert.pmtbackend.exceptions.EntityDontExistException;
 import fr.aaubert.pmtbackend.model.User;
 import fr.aaubert.pmtbackend.repository.UserRepository;
 import fr.aaubert.pmtbackend.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 //import java.util.List;
 //import java.util.Optional;
@@ -22,6 +25,36 @@ public class UserServiceImpl implements UserService {
         User new_user = userRepository.save(user);
         return new_user.getUserId();
     }
+
+    @Override
+    public User getUserByUserName(String userName) {
+
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(userName));
+
+        // On trouve le user
+        if(user.isPresent()) {
+            return user.get();
+        }
+
+        //sinon on renvoie une exception
+        throw new EntityDontExistException();
+
+    }
+
+    /*@Override
+    public User getUserByEmail(String email) {
+        Optional<User> user = Optional.ofNullable(userRepository.findByEmail(email));
+
+        // On trouve le user
+        if(user.isPresent()) {
+            return user.get();
+        }
+
+        //sinon on renvoie une exception
+        throw new EntityDontExistException();
+
+    }*/
+
 /*
     @Override
     public List<User> getAllUsers() {
@@ -34,15 +67,6 @@ public class UserServiceImpl implements UserService {
         return user.orElse(null);
     }
 
-    @Override
-    public User getUserByUserName(String userName) {
-        return userRepository.findByUsername(userName);
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
 
     @Override
     public User updateUser(User user, Long id) {

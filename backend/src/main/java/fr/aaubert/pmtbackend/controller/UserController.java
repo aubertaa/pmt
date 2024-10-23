@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 public class UserController {
     //will have here API endpoints for user management
 

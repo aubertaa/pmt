@@ -1,10 +1,6 @@
 package fr.aaubert.pmtbackend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "user_entity")
+@Table(name = "user_entity", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
 
 	@Id

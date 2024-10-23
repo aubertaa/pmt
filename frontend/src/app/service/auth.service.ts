@@ -1,0 +1,84 @@
+import { Injectable } from '@angular/core';
+import { ApiService } from '../services/api.service';
+import { Router } from '@angular/router';
+import { ToastService } from './toast.service';
+
+export interface User {
+  id: string;
+  login: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  private _isLoggedIn: boolean = false;
+  private _password: string = '';
+
+  public get isLoggedIn(): boolean {
+    return this._isLoggedIn;
+  }
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private toastService: ToastService
+  ) {}
+
+  login(username: string, password: string) {
+    console.log('login as: ' + username + '/' + password);
+    this._password = password;
+    this.apiService.loginUser(username).subscribe({
+      next: (res) => {
+        console.log('res: ' + res);
+
+        const resPassword = res.password;
+        console.log('resPassword: ' + resPassword);
+
+        try {
+          if (resPassword === password) {
+            this._isLoggedIn = true;
+            localStorage.setItem('isLoggedIn', 'true');
+            this.toastService.addToast('Login successful !');
+            this.router.navigate(['/']);
+          } else {
+            this.toastService.addToast('Login failed !');
+            console.log('Login failed !');
+          }
+        } catch (error) {
+          this.toastService.addToast('Login failed !');
+          console.log('Login failed !');
+        }
+      },
+      error: (error) => {
+        this.toastService.addToast('Login failed !');
+        console.log('Login failed !');
+      },
+    });
+  }
+
+  register(username: string, email: string, password: string) {
+    console.log('register as: ' + username + '/' + email + '/' + password);
+
+    this.apiService.registerUser(username, email, password).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.toastService.addToast('Registration successful !');
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        this.toastService.addToast('Registration failed, try another email !');
+        console.log('Registration failed !');
+      },
+    });
+  }
+
+  logout() {
+    this._isLoggedIn = false;
+    localStorage.removeItem('isLoggedIn');
+  }
+
+  isAuthenticated() {
+    return localStorage.getItem('isLoggedIn') == 'true';
+  }
+}

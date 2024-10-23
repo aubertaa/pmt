@@ -1,0 +1,14 @@
+<nav class="navbar header bg-primary">
+  <div class="container-fluid">
+    <div class="ms-auto">
+      <button class="btn btn-primary" (click)="goToRegisterPage()">
+        S'inscrire
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h1 class="mb-3">Connexion</h1>
+  <app-user-input-form [isTryingToLogin]="true"></app-user-input-form>
+</div>

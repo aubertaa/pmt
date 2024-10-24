@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../services/api.service';
+import { ApiService } from './api.service';
 import { Router } from '@angular/router';
 import { ToastService } from './toast.service';
 
@@ -42,10 +42,12 @@ export class AuthService {
             this.toastService.addToast('Login successful !');
             this.router.navigate(['/']);
           } else {
+            localStorage.removeItem('isLoggedIn');
             this.toastService.addToast('Login failed !');
             console.log('Login failed !');
           }
         } catch (error) {
+          localStorage.removeItem('isLoggedIn');
           this.toastService.addToast('Login failed !');
           console.log('Login failed !');
         }
@@ -53,6 +55,7 @@ export class AuthService {
       error: (error) => {
         this.toastService.addToast('Login failed !');
         console.log('Login failed !');
+        localStorage.removeItem('isLoggedIn');
       },
     });
   }
@@ -69,6 +72,7 @@ export class AuthService {
       error: (error) => {
         this.toastService.addToast('Registration failed, try another email !');
         console.log('Registration failed !');
+        localStorage.removeItem('isLoggedIn');
       },
     });
   }

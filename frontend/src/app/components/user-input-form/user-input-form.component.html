@@ -1,0 +1,90 @@
+<form (ngSubmit)="onSubmit(f)" #f="ngForm">
+  <div>
+    <div class="mb-3">
+      <label for="inputUsername" class="form-label">Username</label>
+      <input
+        type="string"
+        name="username"
+        #username="ngModel"
+        ngModel
+        username
+        required
+        id="inputUsername"
+        class="form-control"
+        placeholder="username"
+      />
+    </div>
+
+    <div
+      class="invalid-feedback"
+      *ngIf="username.touched && username.invalid && username.errors"
+    >
+      <ng-container
+        class="invalid-feedback"
+        *ngIf="username.errors['required']"
+      >
+        Le username ne peut pas être vide
+      </ng-container>
+    </div>
+    <div *ngIf="!isTryingToLogin">
+      <div class="mb-3">
+        <label for="inputEmail" class="form-label">Email</label>
+        <input
+          type="email"
+          name="email"
+          #email="ngModel"
+          ngModel
+          email
+          required
+          id="inputEmail"
+          class="form-control"
+          placeholder="name@example.com"
+        />
+      </div>
+
+      <div
+        class="invalid-feedback"
+        *ngIf="email.touched && email.invalid && email.errors"
+      >
+        <ng-container class="invalid-feedback" *ngIf="email.errors['required']">
+          L'email ne peut pas être vide
+        </ng-container>
+
+        <ng-container class="invalid-feedback" *ngIf="email.errors['email']">
+          L'email est invalide
+        </ng-container>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="inputPassword" class="form-label">Password</label>
+      <input
+        type="password"
+        id="inputPassword"
+        name="password"
+        password
+        #password="ngModel"
+        required
+        ngModel
+        class="form-control"
+      />
+    </div>
+
+    <div
+      class="invalid-feedback"
+      *ngIf="password.touched && password.invalid && password.errors"
+    >
+      <ng-container
+        class="invalid-feedback"
+        *ngIf="password.errors['required']"
+      >
+        Le password ne peut pas être vide
+      </ng-container>
+    </div>
+
+    <div class="text-center">
+      <button class="btn btn-primary" type="submit">
+        {{ isTryingToLogin ? "Se connecter" : "S'inscrire" }}
+      </button>
+    </div>
+  </div>
+</form>

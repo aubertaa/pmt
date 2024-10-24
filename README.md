@@ -19,6 +19,10 @@ Le backend de l'application est développé en utilisant le framework Spring Boo
 ### Base de données
 La base de données utilisée est MySQL.
 
+Le modèle de la base de données est le suivant :
+
+![db_model.png](db_model.png)
+
 
 
 

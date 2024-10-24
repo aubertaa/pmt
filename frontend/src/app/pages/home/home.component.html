@@ -1,0 +1,13 @@
+<nav class="navbar header bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand"> PMT - Project Management Tool - Home page</a>
+
+    <div>
+      <button class="btn btn-danger" (click)="logout()" *ngIf="isLoggedIn">
+        Se déconnecter
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="text-center mt-5">You are logged in !</div>

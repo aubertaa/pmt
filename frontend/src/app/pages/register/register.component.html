@@ -1,0 +1,14 @@
+<nav class="navbar header bg-primary">
+  <div class="container-fluid">
+    <div class="ms-auto">
+      <button class="btn btn-primary" (click)="goToLoginPage()">
+        Se connecter
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="container mt-5">
+  <h1 class="mb-3">Inscription</h1>
+
+  <app-user-input-form [isTryingToLogin]="false"></app-user-input-form>
+</div>

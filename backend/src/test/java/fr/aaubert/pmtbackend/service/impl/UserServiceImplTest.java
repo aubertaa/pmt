@@ -29,7 +29,7 @@ public class UserServiceImplTest {
         User user = new User();
         user.setUserId(userId);
         user.setUserName("john.doe");
-        user.setEmail("john.doe@example.com");
+        user.setEmail("john.doe@example.com2");
         user.setPassword("password");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -42,7 +42,7 @@ public class UserServiceImplTest {
         // Test case 1: Saving a new user
         User user = new User();
         user.setUserName("john.doe");
-        user.setEmail("john.doe@example.com");
+        user.setEmail("john.doe@example.com3");
         user.setPassword("password");
         user.setUserId(456L);
 
@@ -58,7 +58,7 @@ public class UserServiceImplTest {
         // Test case 1: Saving a new user
         User user = new User();
         user.setUserName("john.doe");
-        user.setEmail("john.doe@example.com");
+        user.setEmail("john.doe@example.com4");
         user.setPassword("password");
         user.setUserId(456L);
 

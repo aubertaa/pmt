@@ -19,6 +19,6 @@ public class InitData implements CommandLineRunner {
                 user.setUserName("john_doe");
                 user.setEmail("john.doe@example.com");
                 user.setPassword("securepassword");
-                userRepository.save(user);
+                //userRepository.save(user);
         }
 }

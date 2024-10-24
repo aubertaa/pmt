@@ -68,14 +68,14 @@ public class UserControllerTest {
         // Register a user in the mock
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userName\": \"johndoe\", \"password\": \"password\", \"email\": \"myEmail\"}"))
+                        .content("{\"userName\": \"johndoe\", \"password\": \"password\", \"email\": \"myEmail2\"}"))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 ;
         //then search this user
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .param("userName", "johndoe"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"userName\":\"johndoe\",\"password\":\"password\",\"email\":\"myEmail\"}"))
+                .andExpect(MockMvcResultMatchers.content().json("{\"userName\":\"johndoe\",\"password\":\"password\",\"email\":\"myEmail2\"}"))
                 .andDo(print());
     }
 
@@ -84,7 +84,7 @@ public class UserControllerTest {
         // Register a user in the mock
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userName\": \"johndoe2\", \"password\": \"password2\", \"email\": \"myEmail2\"}"))
+                        .content("{\"userName\": \"johndoe2\", \"password\": \"password2\", \"email\": \"myEmail3\"}"))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andDo(print());
 

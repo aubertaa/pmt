@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class ProjectServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(EntityDontExistException.class, () -> projectService.saveProjectWithOwner(project, userId));
+        assertThrows(ResponseStatusException.class, () -> projectService.saveProjectWithOwner(project, userId));
         verify(userRepository, times(1)).findById(userId);
         verify(projectRepository, never()).save(project);
         verify(projectMemberRepository, never()).save(any(ProjectMember.class));

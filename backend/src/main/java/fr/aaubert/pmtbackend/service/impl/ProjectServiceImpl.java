@@ -7,7 +7,9 @@ import fr.aaubert.pmtbackend.repository.ProjectRepository;
 import fr.aaubert.pmtbackend.repository.UserRepository;
 import fr.aaubert.pmtbackend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,29 +31,36 @@ public class ProjectServiceImpl implements ProjectService {
     private UserRepository userRepository;
 
     public Long saveProjectWithOwner(Project project, Long userId) {
+        try {
+            // Check if user exists
+            User user = userRepository.findById(userId)
+                    .orElseThrow(EntityDontExistException::new);
 
-        // check if user exists
-        User user = userRepository.findById(userId)
-                .orElseThrow(EntityDontExistException::new);
+            // Save the project
+            Project savedProject = projectRepository.save(project);
 
-        // save the project
-        Project savedProject = projectRepository.save(project);
+            // Create and save the association as OWNER
+            ProjectMember member = new ProjectMember();
+            ProjectMemberId memberId = new ProjectMemberId();
+            memberId.setUserId(user.getUserId());
+            memberId.setProjectId(savedProject.getProjectId());
+            member.setId(memberId);
+            member.setUser(user);
+            member.setProject(savedProject);
+            member.setRole(UserRole.OWNER);
 
-        // Create and save the association as OWNER
-        ProjectMember member  = new ProjectMember();
-        ProjectMemberId memberId = new ProjectMemberId();
-        memberId.setUserId(user.getUserId());
-        memberId.setProjectId(savedProject.getProjectId());
-        member.setId(memberId);
-        member.setUser(user);
-        member.setProject(savedProject);
-        member.setRole(UserRole.OWNER);
+            projectMemberRepository.save(member);
 
-        projectMemberRepository.save(member);
+            // Return the saved project's ID
+            return savedProject.getProjectId();
 
-        //Return the saved project's ID
-        return savedProject.getProjectId();
+        } catch (Exception ex) {
+
+            // Return a 400 Bad Request error
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project creation failed", ex);
+        }
     }
+
 
     @Override
     public Project getProjectByProjectName(String projectName) {

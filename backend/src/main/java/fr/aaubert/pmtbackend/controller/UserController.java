@@ -6,7 +6,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -27,8 +31,17 @@ public class UserController {
 
     @GetMapping("/user")
     @ResponseStatus(code = HttpStatus.OK)
-    public User getUserByUserName(@Param("userName") String userName){
-        return userService.getUserByUserName(userName);
+    public ResponseEntity<Map<String, Object>> getUserByUserName(@Param("userName") String userName){
+        User user =  userService.getUserByUserName(userName);
+
+        // Build response map with userId included
+        Map<String, Object> response = new HashMap<>();
+        response.put("userId", user.getUserId());
+        response.put("userName", user.getUserName());
+        response.put("email", user.getEmail());
+        response.put("password", user.getPassword());
+
+        return ResponseEntity.ok(response);
     }
 
 }

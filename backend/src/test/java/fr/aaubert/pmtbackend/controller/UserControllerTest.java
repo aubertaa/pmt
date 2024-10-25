@@ -75,7 +75,10 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .param("userName", "johndoe"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"userName\":\"johndoe\",\"password\":\"password\",\"email\":\"myEmail2\"}"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userName").value("johndoe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("myEmail2"))
                 .andDo(print());
     }
 

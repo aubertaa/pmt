@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ public class Project {
 
     @Override
     public String toString() {
-        return "Project [projectName=" + projectName + ", description=" + description + ", startDate=" + startDate.toString()
+        return "Project [projectName=" + projectName + ", description=" + description + ", startDate=" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
                 + "]";
     }
 }

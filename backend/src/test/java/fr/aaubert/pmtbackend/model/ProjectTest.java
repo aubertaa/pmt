@@ -40,7 +40,7 @@ public class ProjectTest {
             project.setProjectName("leprojet");
             project.setDescription("ladescription");
             project.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01"));
-            assertEquals("Project [projectName=leprojet, description=ladescription, startDate=Fri Jan 01 00:00:00 CET 2021]", project.toString());
+            assertEquals("Project [projectName=leprojet, description=ladescription, startDate=2021-01-01]", project.toString());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

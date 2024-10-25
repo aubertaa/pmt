@@ -3,11 +3,6 @@ import { ApiService } from './api.service';
 import { Router } from '@angular/router';
 import { ToastService } from './toast.service';
 
-export interface User {
-  id: string;
-  login: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -39,15 +34,18 @@ export class AuthService {
           if (resPassword === password) {
             this._isLoggedIn = true;
             localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('loggedInUserId', res.userId);
             this.toastService.addToast('Login successful !');
             this.router.navigate(['/']);
           } else {
             localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('loggedInUserId');
             this.toastService.addToast('Login failed !');
             console.log('Login failed !');
           }
         } catch (error) {
           localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('loggedInUserId');
           this.toastService.addToast('Login failed !');
           console.log('Login failed !');
         }
@@ -55,6 +53,7 @@ export class AuthService {
       error: (error) => {
         this.toastService.addToast('Login failed !');
         console.log('Login failed !');
+        localStorage.removeItem('loggedInUserId');
         localStorage.removeItem('isLoggedIn');
       },
     });

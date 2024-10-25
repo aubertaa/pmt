@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Setter
 @Getter
 @Entity
@@ -23,6 +25,11 @@ public class User {
     private String email;
     
     private String password;
+
+    // Define the relationship with ProjectMember
+    @OneToMany(mappedBy = "id.userId", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<ProjectMember> projectMembers;
 
     @Override
 	public String toString() {

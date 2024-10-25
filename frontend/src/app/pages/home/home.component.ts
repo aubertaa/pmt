@@ -1,21 +1,48 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
+import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
   isLoggedIn: boolean = this.authService.isAuthenticated();
 
-  constructor(private authService: AuthService, private router: Router) {
+  projects: Project[] = [];
+  currentProjectName: string = '';
+  currentProjectDescription: string = '';
+  currentStartDate: Date = new Date();
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private projectService: ProjectService
+  ) {
     console.log('isLoggedIn on home: ' + this.isLoggedIn);
     this.isLoggedIn = this.authService.isLoggedIn;
   }
+
+  onAddProject() {
+    this.projectService.addProject(
+      this.currentProjectName,
+      this.currentProjectDescription,
+      this.currentStartDate
+    );
+  }
+
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isAuthenticated();
+    if (this.isLoggedIn) {
+      const loggedInUserId = localStorage.getItem('loggedInUserId');
+      if (loggedInUserId) {
+        this.projectService.getProjects(parseInt(loggedInUserId));
+        this.projectService.projects$.subscribe((projects) => {
+          this.projects = projects;
+        });
+      }
+    }
   }
 
   logout() {

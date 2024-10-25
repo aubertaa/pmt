@@ -10,6 +10,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserInputFormComponent } from './components/user-input-form/user-input-form.component';
 import { provideHttpClient } from '@angular/common/http';
+import { ProjectItemComponent } from './projects/project-item/project-item.component';
 
 @NgModule({
   declarations: [
@@ -17,16 +18,17 @@ import { provideHttpClient } from '@angular/common/http';
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    UserInputFormComponent
+    UserInputFormComponent,
+    ProjectItemComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NgbModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [provideHttpClient()],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

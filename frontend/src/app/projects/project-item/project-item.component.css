@@ -1,0 +1,27 @@
+.project-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.project-name {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.project-description {
+    margin: 5px 0;
+    color: #666;
+}
+
+.project-start-date {
+    margin: 0;
+    color: #999;
+    font-size: 0.9em;
+}
+
+.project-start-date i {
+    margin-right: 5px;
+}

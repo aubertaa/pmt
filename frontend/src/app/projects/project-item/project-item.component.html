@@ -1,0 +1,19 @@
+<div *ngIf="project" class="row p-3" (click)="onClickItem(project)">
+  <div class="col-2 d-flex align-items-center justify-content-center">
+    {{ project.id }}
+  </div>
+  <div class="col-7">
+  <div class="project-item">
+    <h3 class="project-name">{{ project.projectName }}</h3>
+    <p class="project-description">{{ project.description }}</p>
+    <p class="project-start-date">
+      <i class="fa fa-calendar"></i> {{ project.startDate | date: 'longDate' }}
+    </p>
+  </div>
+  </div>
+  <div class="col-3 d-flex align-items-center justify-content-center">
+    <button class="btn btn-primary" (click)="onDeleteProject(project.id)">
+      Supprimer
+    </button>
+  </div>
+</div>

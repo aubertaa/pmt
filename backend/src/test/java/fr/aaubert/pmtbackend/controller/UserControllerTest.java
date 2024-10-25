@@ -70,7 +70,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"userName\": \"johndoe\", \"password\": \"password\", \"email\": \"myEmail2\"}"))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
-;
+
         //then search this user
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .param("userName", "johndoe"))
@@ -95,6 +95,24 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .param("username", "johndoe"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    void testGetUsers() throws Exception {
+        // Register a user in the mock
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userName\": \"johndoeAll\", \"password\": \"password\", \"email\": \"myEmailAll\"}"))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].userId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].userName").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].password").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").exists())
                 .andDo(print());
     }
 

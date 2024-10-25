@@ -57,6 +57,24 @@ public class ProjectController {
 
     }
 
+    @PostMapping("/project/addMember")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void addMember(@RequestParam("projectId") String projectId, @RequestParam("userId") String userId) {
+        projectService.addMember(Long.valueOf(projectId), Long.valueOf(userId));
+    }
+
+    @PostMapping("/project/changeRole")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void changeRole(@RequestParam("projectId") String projectId, @RequestParam("userId") String userId, @RequestParam("role") String role) {
+        projectService.changeRole(Long.valueOf(projectId), Long.valueOf(userId), role);
+    }
+
+    @PostMapping("/project/removeMember")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void removeMember(@RequestParam("projectId") String projectId, @RequestParam("userId") String userId) {
+        projectService.removeMember(Long.valueOf(projectId), Long.valueOf(userId));
+    }
+
     @DeleteMapping("/project")
     @ResponseStatus(code = HttpStatus.OK)
     public void deleteProject(@RequestParam("id") String projectId) {

@@ -13,4 +13,10 @@ public interface ProjectService {
     Project getProjectByProjectName(String projectName);
 
     Long saveProjectWithOwner(Project project, Long userId);
+
+    void addMember(Long projectId, Long userId);
+
+    void changeRole(Long projectId, Long userId, String role);
+
+    void removeMember(Long projectId, Long userId);
 }

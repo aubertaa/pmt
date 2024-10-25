@@ -13,4 +13,8 @@ import java.util.List;
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, ProjectMemberId> {
     @Query("SELECT pm.project FROM ProjectMember pm WHERE pm.user.id = :userId")
     List<Project> getProjectsByUserId(Long userId);  // Query all ProjectMembers for the user
+
+    @Query("SELECT pm.user FROM ProjectMember pm WHERE pm.project.id = :projectId AND pm.user.id = :userId")
+    boolean existsByUserIdAndProjectId(Long userId, Long projectId); // check if user is already a member of the project
+
 }

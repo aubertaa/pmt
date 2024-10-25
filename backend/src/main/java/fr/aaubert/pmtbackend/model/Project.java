@@ -32,5 +32,10 @@ public class Project {
     @JsonIgnore
     private Set<ProjectMember> projectMembers;
 
-    // Additional fields, constructors, getters, and setters
+
+    @Override
+    public String toString() {
+        return "Project [projectName=" + projectName + ", description=" + description + ", startDate=" + startDate.toString()
+                + "]";
+    }
 }

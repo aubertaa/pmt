@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
 import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
 
 @Component({
   templateUrl: './home.component.html',
@@ -11,6 +12,7 @@ export class HomeComponent implements OnInit {
   isLoggedIn: boolean = this.authService.isAuthenticated();
 
   projects: Project[] = [];
+
   currentProjectName: string = '';
   currentProjectDescription: string = '';
   currentStartDate: Date = new Date();
@@ -24,12 +26,21 @@ export class HomeComponent implements OnInit {
     this.isLoggedIn = this.authService.isLoggedIn;
   }
 
-  onAddProject() {
+  onAddProject (form: NgForm) {
+    //valider tous les champs
+    form.form.markAllAsTouched();
+
+    if (form.invalid) {
+      return;
+    }
+
     this.projectService.addProject(
       this.currentProjectName,
       this.currentProjectDescription,
       this.currentStartDate
     );
+
+    form.reset();
   }
 
   ngOnInit(): void {

@@ -11,57 +11,51 @@
 </nav>
 
 <div class="text-center mt-5">You are logged in !</div>
-
 <div class="container mt-5">
-  <div class="row mb-3">
+    <form class="row mb-3" (ngSubmit)="onAddProject(fproject)" #fproject="ngForm">
     <h1>Projets</h1>
     <div class="form-row align-items-center">
       <div class="col-md-4">
         <div class="form-group">
           <label for="projectName">Project Name</label>
-          <input
-            type="text"
-            id="projectName"
-            class="form-control"
-            [(ngModel)]="currentProjectName"
-            placeholder="Enter project name"
-          />
+          <input class="form-control"
+           id="projectName" 
+           name="currentProjectName" 
+           type="string" 
+           #currentProjectName="ngModel" 
+           ngModel 
+           required 
+           placeholder="Enter project name" />
         </div>
+        <div class="invalid-feedback" *ngIf="currentProjectName.touched && currentProjectName.invalid && currentProjectName.errors">
+      <ng-container class="invalid-feedback" *ngIf="currentProjectName.errors['required']">
+        Le nom de projet ne peut pas être vide
+      </ng-container>
+    </div>
       </div>
       <div class="col-md-4">
         <div class="form-group">
           <label for="projectDescription">Description</label>
-          <textarea
-            id="projectDescription"
-            class="form-control"
-            [(ngModel)]="currentProjectDescription"
-            placeholder="Enter project description"
-            rows="1"
-          ></textarea>
+          <input class="form-control" id="projectDescription" name="currentProjectDescription" #currentProjectDescription="ngModel" ngModel placeholder="Enter project description" rows="1"/>
         </div>
       </div>
       <div class="col-md-4">
         <div class="form-group">
           <label for="projectStartDate">Start Date</label>
-          <input
-            type="date"
-            id="projectStartDate"
-            class="form-control"
-            [(ngModel)]="currentStartDate"
-          />
+          <input class="form-control" id="projectStartDate" name="currentStartDate" type="date" #currentStartDate="ngModel" ngModel/>
         </div>
       </div>
       <div class="col-2 d-flex align-items-center justify-content-center">
-        <button class="btn btn-primary" (click)="onAddProject()">
+        <button class="btn btn-primary" type="submit">
           Ajouter
         </button>
       </div>
     </div>
-
+</form>
     <div class="row mb-3">
       <ng-container *ngFor="let project of projects">
         <app-project-item [project]="project"></app-project-item>
       </ng-container>
     </div>
   </div>
-</div>
+

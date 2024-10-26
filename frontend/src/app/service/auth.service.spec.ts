@@ -16,6 +16,7 @@ describe('AuthService', () => {
     apiServiceMock = {
       loginUser: jest.fn(),
       registerUser: jest.fn(),
+      getUsers: jest.fn(),
     };
 
     // Mock only the necessary Router methods
@@ -152,6 +153,39 @@ describe('AuthService', () => {
     it('should return false if isLoggedIn is not set in localStorage', () => {
       localStorage.removeItem('isLoggedIn');
       expect(authService.isAuthenticated()).toBe(false);
+    });
+  });
+
+  describe('getUsers', () => {
+    describe('getUsers', () => {
+      it('should fetch users successfully and update the usersSubject', () => {
+        const usersResponse = [
+          { userName: 'user1', email: 'user1@example.com', userId: 1 },
+          { userName: 'user2', email: 'user2@example.com', userId: 2 },
+        ];
+
+        (apiServiceMock as any).getUsers.mockReturnValue(of(usersResponse));
+
+        authService.getUsers();
+
+        expect((apiServiceMock as any).getUsers).toHaveBeenCalled();
+        expect((toastServiceMock as any).addToast).toHaveBeenCalledWith('Users fetched !');
+        expect(authService.usersSubject.value).toEqual(usersResponse);
+      });
+
+      it('should handle error when fetching users', () => {
+        const errorResponse = new HttpErrorResponse({
+          error: 'test error',
+          status: 500,
+        });
+
+        (apiServiceMock as any).getUsers.mockReturnValue(throwError(() => errorResponse));
+
+        authService.getUsers();
+
+        expect((toastServiceMock as any).addToast).toHaveBeenCalledWith('Users not fetched !');
+        expect(authService.usersSubject.value).toEqual([]);
+      });
     });
   });
 });

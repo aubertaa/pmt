@@ -1,19 +1,93 @@
-<div *ngIf="project" class="row p-3" (click)="onClickItem(project)">
+<div class="row p-3" *ngIf="project" (click)="onClickItem(project)">
   <div class="col-2 d-flex align-items-center justify-content-center">
     {{ project.id }}
   </div>
-  <div class="col-7">
-  <div class="project-item">
-    <h3 class="project-name">{{ project.projectName }}</h3>
-    <p class="project-description">{{ project.description }}</p>
-    <p class="project-start-date">
-      <i class="fa fa-calendar"></i> {{ project.startDate | date: 'longDate' }}
-    </p>
+  <div class="col-10">
+    <div class="project-item">
+      <h3 class="project-name">{{ project.projectName }}</h3>
+      <p class="project-description">{{ project.description ? project.description : '-' }}</p>
+      <div class="project-details">
+        <p class="project-start-date">
+          <i class="fa fa-calendar"></i> {{ project.startDate | date: 'longDate' }}
+        </p>
+      </div>
+      <div class="button-container">
+        <button class="btn btn-info" *ngIf="project.userRole === 'OWNER'"  (click)="onSeeMembers(project.id)">
+          See Members
+        </button>
+        <button class="btn btn-secondary" *ngIf="project.userRole === 'OWNER'" (click)="onInviteUsers($event, project.id)">
+          Invite
+        </button>
+        <button class="btn btn-primary" *ngIf="project.userRole === 'OWNER'" (click)="onDeleteProject(project.id)">
+          Supprimer
+        </button>
+      </div>
+      <p class="project-user-role">
+        {{ project.userRole }}
+      </p>
+    </div>
   </div>
+</div>
+
+<!-- Popin for inviting users -->
+<div class="invite-popin" *ngIf="showInvitePopin && project">
+  <div class="popin-content">
+    <h4>Invite User</h4>
+  
+    <div *ngIf="users$ | async as users;  else noUsers ">
+      <table class="user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User Name</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let user of users">
+              <tr *ngIf="isUserNotMember(project, user)" (click)="onAddMember(user, project)">
+              <td>{{ user.userId }}</td>
+              <td>{{ user.userName }}</td>
+              <td>{{ user.email }}</td>
+            </tr>
+          </ng-container>
+          </tbody>
+        </table>
+    </div>
+      <ng-template #noUsers="">
+        <p>Personne n'est à inviter sur ce projet</p>
+      </ng-template>
+    <button class="btn btn-secondary close-button" (click)="closeInvitePopin()">Fermer</button>
   </div>
-  <div class="col-3 d-flex align-items-center justify-content-center">
-    <button class="btn btn-primary" (click)="onDeleteProject(project.id)">
-      Supprimer
-    </button>
+</div>
+
+<!-- Popin for seeing members -->
+<div class="members-popin" *ngIf="showMembersPopin && project">
+  <div class="popin-content">
+    <h4>Project Members</h4>
+    <div *ngIf="roles$ | async as roles;">
+    <table class="members-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let member of project?.members">
+          <td>{{ member.id.userId }}</td>
+          <td>{{ member.user?.userName }}</td>
+          <td>{{ member.user?.email }}</td>
+            <td>
+            <select [disabled]="member.id.userId === loggedInUserId" (change)="onChangeRole(member.id.userId, project, $event)">
+              <option *ngFor="let role of roles" [value]="role" [selected]="role === member.role">{{ role }}</option>
+            </select>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-secondary close-button" (click)="closeMembersPopin()">Fermer</button>
   </div>
 </div>

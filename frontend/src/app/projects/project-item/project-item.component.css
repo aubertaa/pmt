@@ -3,6 +3,7 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f9f9f9;
+    position: relative;
 }
 
 .project-name {
@@ -16,6 +17,12 @@
     color: #666;
 }
 
+.project-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .project-start-date {
     margin: 0;
     color: #999;
@@ -24,4 +31,96 @@
 
 .project-start-date i {
     margin-right: 5px;
+}
+
+.project-user-role {
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 0;
+    font-size: 0.9em;
+    color: #333;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.button-container {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.invite-popin {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.popin-content {
+    text-align: center;
+}
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.user-table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+.close-button {
+    margin-top: 20px;
+    /* Adjust the value as needed */
+}
+.members-popin {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.popin-content {
+  max-width: 600px;
+  margin: auto;
+}
+
+.members-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.members-table th, .members-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.members-table th {
+  background-color: #f2f2f2;
+}
+
+.close-button {
+  margin-top: 20px;
 }

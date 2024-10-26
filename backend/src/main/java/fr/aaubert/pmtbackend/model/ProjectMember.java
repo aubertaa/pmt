@@ -1,12 +1,16 @@
 package fr.aaubert.pmtbackend.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "project_members",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "project_id"}))
 public class ProjectMember {

@@ -1,12 +1,16 @@
 package fr.aaubert.pmtbackend.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import fr.aaubert.pmtbackend.exceptions.EntityDontExistException;
 import fr.aaubert.pmtbackend.model.*;
 import fr.aaubert.pmtbackend.repository.ProjectMemberRepository;
 import fr.aaubert.pmtbackend.repository.ProjectRepository;
 import fr.aaubert.pmtbackend.repository.UserRepository;
 import fr.aaubert.pmtbackend.service.ProjectService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,12 +18,19 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
+    private static final Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
+
+
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Override
+    public List<ProjectMember> getProjectMembers(Long projectId) {
+        return projectMemberRepository.getMembersByProjectId(projectId);
+    }
 
     @Autowired
     private ProjectMemberRepository projectMemberRepository;
@@ -59,39 +70,32 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public void addMember(Long projectId, Long userId) {
         try {
-            // Check if project exists
+            log.debug("Finding project with ID: " + projectId);
             Project project = projectRepository.findById(projectId)
-                    .orElseThrow(EntityDontExistException::new);
+                    .orElseThrow(() -> new EntityDontExistException("Project not found"));
 
-            // Check if user exists
+            log.debug("Finding user with ID: " + userId);
             User user = userRepository.findById(userId)
-                    .orElseThrow(EntityDontExistException::new);
+                    .orElseThrow(() -> new EntityDontExistException("User not found"));
 
-            // Check if user is already a member of the project
             if (projectMemberRepository.existsByUserIdAndProjectId(userId, projectId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already a member of the project");
             }
 
-            // Create and save the association as MEMBER
-            ProjectMember member = new ProjectMember();
-            ProjectMemberId memberId = new ProjectMemberId();
-            memberId.setUserId(user.getUserId());
-            memberId.setProjectId(project.getProjectId());
-            member.setId(memberId);
-            member.setUser(user);
-            member.setProject(project);
-            member.setRole(UserRole.CONTRIBUTOR);
+            log.debug("Setting up ProjectMember with project ID: " + project.getProjectId() + " and user ID: " + user.getUserId());
+            ProjectMemberId memberId = new ProjectMemberId(user.getUserId(), project.getProjectId());
+            ProjectMember member = new ProjectMember(memberId, user, project, UserRole.CONTRIBUTOR);
 
             projectMemberRepository.save(member);
 
-        } catch (Exception ex) {
-            // Return a 400 Bad Request error
+        } catch (EntityDontExistException | DataAccessException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Member addition failed", ex);
         }
-
     }
+
 
     @Override
     public void changeRole(Long projectId, Long userId, String new_role) {
@@ -172,6 +176,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteProject(Long id) {
         projectRepository.deleteById(id);
+    }
+
+    @Override
+    public String getUserRole(Long projectId, Long userId) {
+        return projectMemberRepository.getRoleByUserIdAndProjectId(userId, projectId);
     }
 
 }

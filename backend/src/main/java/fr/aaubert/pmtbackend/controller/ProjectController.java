@@ -18,8 +18,10 @@ import java.util.Map;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
-
+@CrossOrigin(
+        origins = {"http://localhost:4200", "http://localhost:4201"},
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class ProjectController {
     //will have here API endpoints for user management
 
@@ -50,6 +52,8 @@ public class ProjectController {
             projectMap.put("projectName", project.getProjectName());
             projectMap.put("description", project.getDescription());
             projectMap.put("startDate", project.getStartDate());
+            projectMap.put("userRole", projectService.getUserRole(project.getProjectId(), userId));
+            projectMap.put("members", projectService.getProjectMembers(project.getProjectId()));
             return projectMap;
         }).toList();
 

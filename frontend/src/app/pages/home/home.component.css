@@ -1,14 +1,21 @@
+.form-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 15px;
+}
 
-  .form-row {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 15px;
-  }
+.form-group {
+  margin-bottom: 0;
+}
 
-  .form-group {
-    margin-bottom: 0;
-  }
+.form-control {
+  width: 100%;
+}
 
-  .form-control {
-    width: 100%;
-  }
+input.ng-touched.ng-invalid {
+  border: 1px solid red;
+}
+
+.invalid-feedback {
+  display: block;
+}

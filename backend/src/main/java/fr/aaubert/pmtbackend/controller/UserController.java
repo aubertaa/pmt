@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -43,5 +44,22 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/users")
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<List<Map<String, Object>>> getUsers(){
+        List<User> users = userService.getAllUsers();
+
+        // Build response map with userId included
+        List<Map<String, Object>> response = users.stream().map(user -> {
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("userId", user.getUserId());
+            userMap.put("userName", user.getUserName());
+            userMap.put("email", user.getEmail());
+            return userMap;
+        }).toList();
+        return ResponseEntity.ok(response);
+    }
+
 
 }

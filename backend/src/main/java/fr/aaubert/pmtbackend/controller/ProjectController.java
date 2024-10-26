@@ -18,8 +18,10 @@ import java.util.Map;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
-
+@CrossOrigin(
+        origins = {"http://localhost:4200", "http://localhost:4201"},
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class ProjectController {
     //will have here API endpoints for user management
 
@@ -50,11 +52,31 @@ public class ProjectController {
             projectMap.put("projectName", project.getProjectName());
             projectMap.put("description", project.getDescription());
             projectMap.put("startDate", project.getStartDate());
+            projectMap.put("userRole", projectService.getUserRole(project.getProjectId(), userId));
+            projectMap.put("members", projectService.getProjectMembers(project.getProjectId()));
             return projectMap;
         }).toList();
 
         return ResponseEntity.ok(response);
 
+    }
+
+    @PostMapping("/project/addMember")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void addMember(@RequestParam("projectId") String projectId, @RequestParam("userId") String userId) {
+        projectService.addMember(Long.valueOf(projectId), Long.valueOf(userId));
+    }
+
+    @PostMapping("/project/changeRole")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void changeRole(@RequestParam("projectId") String projectId, @RequestParam("userId") String userId, @RequestParam("role") String role) {
+        projectService.changeRole(Long.valueOf(projectId), Long.valueOf(userId), role);
+    }
+
+    @PostMapping("/project/removeMember")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void removeMember(@RequestParam("projectId") String projectId, @RequestParam("userId") String userId) {
+        projectService.removeMember(Long.valueOf(projectId), Long.valueOf(userId));
     }
 
     @DeleteMapping("/project")

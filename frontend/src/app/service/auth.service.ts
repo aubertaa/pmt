@@ -2,6 +2,13 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Router } from '@angular/router';
 import { ToastService } from './toast.service';
+import { BehaviorSubject } from 'rxjs';
+
+export interface User {
+  userName: string;
+  email: string;
+  userId: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +16,9 @@ import { ToastService } from './toast.service';
 export class AuthService {
   private _isLoggedIn: boolean = false;
   private _password: string = '';
+
+  usersSubject = new BehaviorSubject<User[]>([]);
+  users$ = this.usersSubject.asObservable();
 
   public get isLoggedIn(): boolean {
     return this._isLoggedIn;
@@ -83,5 +93,22 @@ export class AuthService {
 
   isAuthenticated() {
     return localStorage.getItem('isLoggedIn') == 'true';
+  }
+
+  getUsers() {
+    this.apiService.getUsers().subscribe({
+      next: (res) => {
+        console.log('res: ' + res);
+        try {
+          this.usersSubject.next(res); // Update the users Subject with the fetched roles
+          this.toastService.addToast('Users fetched !');
+        } catch (error) {
+          this.toastService.addToast('Users not fetched !');
+        }
+      },
+      error: (error) => {
+        this.toastService.addToast('Users not fetched !');
+      },
+    });
   }
 }

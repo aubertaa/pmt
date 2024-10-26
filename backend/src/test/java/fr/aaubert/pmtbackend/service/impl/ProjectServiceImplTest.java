@@ -10,15 +10,23 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import fr.aaubert.pmtbackend.model.UserRole;
+import fr.aaubert.pmtbackend.model.ProjectMemberId;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ProjectServiceImplTest {
+
+    private Project project;
+    private User user;
+    private Long projectId = 1L;
+    private Long userId = 1L;
 
     @Mock
     private ProjectRepository projectRepository;
@@ -35,6 +43,11 @@ public class ProjectServiceImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        project = new Project();
+        project.setProjectId(projectId);
+
+        user = new User();
+        user.setUserId(userId);
     }
 
     @Test
@@ -135,4 +148,156 @@ public class ProjectServiceImplTest {
         // Assert
         verify(projectRepository, times(1)).deleteById(projectId);
     }
+
+
+    @Test
+    void testAddMember() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(projectMemberRepository.existsByUserIdAndProjectId(userId, projectId)).thenReturn(false);
+
+        assertDoesNotThrow(() -> projectService.addMember(projectId, userId));
+        verify(projectMemberRepository, times(1)).save(any(ProjectMember.class));
+    }
+
+    @Test
+    void testAddMember_ProjectNotFound() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> projectService.addMember(projectId, userId));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Member addition failed", exception.getReason());
+    }
+
+    @Test
+    void testAddMember_UserAlreadyMember() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(projectMemberRepository.existsByUserIdAndProjectId(userId, projectId)).thenReturn(true);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> projectService.addMember(projectId, userId));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("User is already a member of the project", exception.getReason());
+    }
+
+    @Test
+    void testChangeRole() {
+        ProjectMember member = new ProjectMember();
+        member.setUser(user);
+        member.setProject(project);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(projectMemberRepository.existsByUserIdAndProjectId(userId, projectId)).thenReturn(true);
+        when(projectMemberRepository.findById(new ProjectMemberId(userId, projectId))).thenReturn(Optional.of(member));
+
+        assertDoesNotThrow(() -> projectService.changeRole(projectId, userId, "CONTRIBUTOR"));
+        verify(projectMemberRepository, times(1)).save(member);
+    }
+
+    @Test
+    void testChangeRole_UserNotMember() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(projectMemberRepository.existsByUserIdAndProjectId(userId, projectId)).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> projectService.changeRole(projectId, userId, "CONTRIBUTOR"));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Role change failed", exception.getReason());
+    }
+
+    @Test
+    void testRemoveMember() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(projectMemberRepository.existsByUserIdAndProjectId(userId, projectId)).thenReturn(true);
+
+        assertDoesNotThrow(() -> projectService.removeMember(projectId, userId));
+        verify(projectMemberRepository, times(1)).deleteById(new ProjectMemberId(userId, projectId));
+    }
+
+    @Test
+    void testRemoveMember_UserNotMember() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(projectMemberRepository.existsByUserIdAndProjectId(userId, projectId)).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> projectService.removeMember(projectId, userId));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Member removal failed", exception.getReason());
+    }
+
+    @Test
+    void testGetUserRole_ReturnsExpectedRole() {
+        // Arrange
+        Long projectId = 1L;
+        Long userId = 2L;
+        String expectedRole = "Admin";
+
+        // Mock repository call
+        when(projectMemberRepository.getRoleByUserIdAndProjectId(userId, projectId)).thenReturn(expectedRole);
+
+        // Act
+        String actualRole = projectService.getUserRole(projectId, userId);
+
+        // Assert
+        assertEquals(expectedRole, actualRole, "The role should match the expected value returned from repository");
+        verify(projectMemberRepository, times(1)).getRoleByUserIdAndProjectId(userId, projectId);
+    }
+
+    @Test
+    void testGetUserRole_ReturnsNullWhenNoRoleFound() {
+        // Arrange
+        Long projectId = 1L;
+        Long userId = 2L;
+
+        // Mock repository to return null
+        when(projectMemberRepository.getRoleByUserIdAndProjectId(userId, projectId)).thenReturn(null);
+
+        // Act
+        String actualRole = projectService.getUserRole(projectId, userId);
+
+        // Assert
+        assertNull(actualRole, "The role should be null if no role is found for given user and project");
+        verify(projectMemberRepository, times(1)).getRoleByUserIdAndProjectId(userId, projectId);
+    }
+
+
+    @Test
+    void testGetProjectMembers() {
+        ProjectMember member = new ProjectMember();
+        member.setUser(user);
+        member.setProject(project);
+        member.setRole(UserRole.CONTRIBUTOR);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(projectMemberRepository.getMembersByProjectId(projectId)).thenReturn(List.of(member));
+
+        List<ProjectMember> result = projectService.getProjectMembers(projectId);
+
+        assertEquals(List.of(member), result);
+    }
+
+
+    @Test
+    void testGetProjectMembers_NoMembers() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(projectMemberRepository.getMembersByProjectId(projectId)).thenReturn(List.of());
+
+        List<ProjectMember> result = projectService.getProjectMembers(projectId);
+
+        assertEquals(List.of(), result);
+    }
+
+    @Test
+    void testAddMember_UserNotFound() {
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> projectService.addMember(projectId, userId));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Member addition failed", exception.getReason());
+    }
+
+
 }

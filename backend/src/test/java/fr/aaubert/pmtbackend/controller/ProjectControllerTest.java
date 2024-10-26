@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -130,5 +129,31 @@ public class ProjectControllerTest {
 
         verify(projectService, times(1)).getProjectsByUserId(1L);
     }
+
+    @Test
+    public void testAddMember() {
+        String projectId = "1";
+        String userId = "1";
+        projectController.addMember(projectId, userId);
+        verify(projectService, times(1)).addMember(Long.valueOf(projectId), Long.valueOf(userId));
+    }
+
+    @Test
+    public void testChangeRole() {
+        String projectId = "1";
+        String userId = "1";
+        String role = "admin";
+        projectController.changeRole(projectId, userId, role);
+        verify(projectService, times(1)).changeRole(Long.valueOf(projectId), Long.valueOf(userId), role);
+    }
+
+    @Test
+    public void testRemoveMember() {
+        String projectId = "1";
+        String userId = "1";
+        projectController.removeMember(projectId, userId);
+        verify(projectService, times(1)).removeMember(Long.valueOf(projectId), Long.valueOf(userId));
+    }
+
 
 }

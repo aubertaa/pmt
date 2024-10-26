@@ -1,6 +1,7 @@
 package fr.aaubert.pmtbackend.service;
 
 import fr.aaubert.pmtbackend.model.Project;
+import fr.aaubert.pmtbackend.model.ProjectMember;
 
 import java.util.List;
 
@@ -13,4 +14,14 @@ public interface ProjectService {
     Project getProjectByProjectName(String projectName);
 
     Long saveProjectWithOwner(Project project, Long userId);
+
+    void addMember(Long projectId, Long userId);
+
+    void changeRole(Long projectId, Long userId, String role);
+
+    void removeMember(Long projectId, Long userId);
+
+    String getUserRole(Long projectId, Long userId);
+
+    List<ProjectMember> getProjectMembers(Long projectId);
 }

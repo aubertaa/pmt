@@ -126,12 +126,14 @@ describe('ApiService', () => {
           description: 'Test 1',
           startDate: new Date(),
           id: 1,
+          userRole: 'admin',
         },
         {
           projectName: 'Project 2',
           description: 'Test 2',
           startDate: new Date(),
           id: 2,
+          userRole: 'admin',
         },
       ];
 
@@ -174,6 +176,7 @@ describe('ApiService', () => {
           description: 'Description',
           startDate: new Date(),
           id: 1,
+          userRole: 'admin',
         },
         userId: 1,
       };
@@ -190,4 +193,76 @@ describe('ApiService', () => {
       req.flush(mockResponse);
     });
   });
+
+  describe('getRoles', () => {
+    it('should retrieve roles', () => {
+      const mockRoles: string[] = ['admin', 'user'];
+
+      service.getRoles().subscribe((roles) => {
+        expect(roles).toEqual(mockRoles);
+      });
+
+      const req = httpMock.expectOne('http://localhost:8081/api/roles');
+      expect(req.request.method).toBe('GET');
+      req.flush(mockRoles);
+    });
+  });
+
+  describe('addProjectMember', () => {
+    it('should add a member to a project', () => {
+      const mockResponse: CreatedResponse = { id: 1 };
+
+      service.addProjectMember(1, 1).subscribe((response) => {
+        expect(response).toEqual(mockResponse);
+      });
+
+      const req = httpMock.expectOne(
+        (request) =>
+          request.url === 'http://localhost:8081/api/project/addMember' &&
+          request.params.get('projectId') === '1' &&
+          request.params.get('userId') === '1'
+      );
+      expect(req.request.method).toBe('POST');
+      req.flush(mockResponse);
+    });
+  });
+
+  describe('changeRole', () => {
+    it('should change a user role', () => {
+      const mockResponse: CreatedResponse = { id: 1 };
+
+      service.changeRole(1, 1, 'admin').subscribe((response) => {
+        expect(response).toEqual(mockResponse);
+      });
+
+      const req = httpMock.expectOne(
+        (request) =>
+          request.url === 'http://localhost:8081/api/project/changeRole' &&
+          request.params.get('projectId') === '1' &&
+          request.params.get('userId') === '1' &&
+          request.params.get('role') === 'admin'
+      );
+      expect(req.request.method).toBe('POST');
+      req.flush(mockResponse);
+    });
+  });
+
+  describe('catchError', () => {
+    it('should handle error', () => {
+      const mockError = new HttpErrorResponse({
+        status: 404,
+        statusText: 'Not Found',
+        error: { error: 'Error' },
+      });
+
+      service.catchError(mockError).subscribe({
+        next: () => fail('Expected error'),
+        error: (error) => {
+          expect(error).toEqual(mockError);
+        },
+      });
+    });
+  });
+
+
 });

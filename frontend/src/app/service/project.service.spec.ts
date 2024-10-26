@@ -14,6 +14,9 @@ describe('ProjectService', () => {
       addProject: jest.fn(),
       getProjects: jest.fn(),
       deleteProject: jest.fn(),
+      getRoles: jest.fn(),
+      changeRole: jest.fn(),
+      addProjectMember: jest.fn()
     } as any;
 
     toastService = {
@@ -39,6 +42,7 @@ describe('ProjectService', () => {
       const mockResponse = { id: 1 };
 
       apiService.addProject.mockReturnValue(of({ id: mockResponse.id } as CreatedResponse));
+      apiService.getProjects.mockReturnValue(of({} as Project[]));
 
       projectService.addProject(projectName, description, startDate);
 
@@ -133,6 +137,8 @@ describe('ProjectService', () => {
       apiService.deleteProject.mockReturnValue(
         of({ id: mockResponse.id } as CreatedResponse)
       );
+      apiService.getProjects.mockReturnValue(of({} as Project[]));
+
 
       projectService.deleteProject(projectId);
 
@@ -175,6 +181,92 @@ describe('ProjectService', () => {
       projectService.deleteProject(projectId);
 
       expect(toastService.addToast).toHaveBeenCalledWith(`Project not found!`);
+    });
+  });
+
+  describe('getRoles', () => {
+    it('should fetch roles successfully', () => {
+      const mockRoles = ['admin', 'user'];
+
+      apiService.getRoles.mockReturnValue(of(mockRoles));
+
+      projectService.getRoles();
+
+      projectService.roles$.subscribe((roles) => {
+        expect(roles.length).toBe(2);
+        expect(roles[0]).toBe('admin');
+        expect(roles[1]).toBe('user');
+      });
+
+      expect(toastService.addToast).toHaveBeenCalledWith('Roles fetched !');
+    });
+
+    it('should handle error when fetching roles', () => {
+      apiService.getRoles.mockReturnValue(
+        throwError(() => new Error('Error'))
+      );
+
+      projectService.getRoles();
+
+      expect(toastService.addToast).toHaveBeenCalledWith('Roles not fetched !');
+    });
+  });
+
+  describe('changeRole', () => {
+    it('should change role successfully', () => {
+      const userId = 1;
+      const projectId = 1;
+      const newRole = 'admin';
+
+      apiService.changeRole.mockReturnValue(of({}));
+      apiService.getProjects.mockReturnValue(of({} as Project[]));
+
+      projectService.changeRole(userId, projectId, newRole);
+
+      expect(toastService.addToast).toHaveBeenCalledWith('Role of ' + userId + ' changed !');
+    });
+
+    it('should handle error when changing role', () => {
+      const userId = 1;
+      const projectId = 1;
+      const newRole = 'admin';
+
+      apiService.changeRole.mockReturnValue(
+        throwError(() => new Error('Error'))
+      );
+      apiService.getProjects.mockReturnValue(of({} as Project[]));
+
+      projectService.changeRole(userId, projectId, newRole);
+
+      expect(toastService.addToast).toHaveBeenCalledWith('Role of ' + userId + ' not changed !');
+    });
+  });
+
+  describe('addMember', () => {
+    it('should add member successfully', () => {
+      const userId = 1;
+      const projectId = 1;
+
+      apiService.addProjectMember.mockReturnValue(of({}));
+      apiService.getProjects.mockReturnValue(of({} as Project[]));
+
+      projectService.addMember(userId, projectId);
+
+      expect(toastService.addToast).toHaveBeenCalledWith('User ' + userId + ' added to project !');
+    });
+
+    it('should handle error when adding member', () => {
+      const userId = 1;
+      const projectId = 1;
+
+      apiService.addProjectMember.mockReturnValue(
+        throwError(() => new Error('Error'))
+      );
+      apiService.getProjects.mockReturnValue(of({} as Project[]));
+
+      projectService.addMember(userId, projectId);
+
+      expect(toastService.addToast).toHaveBeenCalledWith('User ' + userId + ' not added to project !');
     });
   });
 });

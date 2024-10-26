@@ -8,6 +8,7 @@ import fr.aaubert.pmtbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 //import java.util.List;
@@ -41,47 +42,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    /*@Override
-    public User getUserByEmail(String email) {
-        Optional<User> user = Optional.ofNullable(userRepository.findByEmail(email));
-
-        // On trouve le user
-        if(user.isPresent()) {
-            return user.get();
-        }
-
-        //sinon on renvoie une exception
-        throw new EntityDontExistException();
-
-    }*/
-
-/*
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    @Override
-    public User getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.orElse(null);
-    }
-
-
-    @Override
-    public User updateUser(User user, Long id) {
-        Optional<User> existingUser = userRepository.findById(id);
-        if (existingUser.isPresent()) {
-            User updatedUser = existingUser.get();
-            updatedUser.setUsername(user.getUsername());
-            updatedUser.setEmail(user.getEmail());
-            updatedUser.setPassword(user.getPassword());
-            return userRepository.save(updatedUser);
-        } else {
-            return null;
-        }
-    }
-*/
 
     @Override
     public void deleteUser(Long id) {

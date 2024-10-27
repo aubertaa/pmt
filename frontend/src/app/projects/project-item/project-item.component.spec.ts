@@ -1,49 +1,50 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectItemComponent } from './project-item.component';
-import { ProjectService } from '../../service/project.service';
+import { Project, ProjectService } from '../../service/project.service';
+import { Task, TaskService } from '../../service/task.service';
 import { AuthService, User } from '../../service/auth.service';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
-import { Project } from '../../service/project.service';
+import { FormsModule } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 
 describe('ProjectItemComponent', () => {
   let component: ProjectItemComponent;
   let fixture: ComponentFixture<ProjectItemComponent>;
-  let projectServiceMock: jest.Mocked<ProjectService>;
-  let authServiceMock: jest.Mocked<AuthService>;
-  let routerMock: jest.Mocked<Router>;
+  let mockProjectService: jest.Mocked<ProjectService>;
+  let mockTaskService: jest.Mocked<TaskService>;
+  let mockAuthService: jest.Mocked<AuthService>;
+  let mockRouter: jest.Mocked<Router>;
 
   beforeEach(async () => {
-    projectServiceMock = {
-      roles$: of(['Admin', 'Contributor']),
-      getRoles: jest.fn(),
+    mockProjectService = {
       changeRole: jest.fn(),
       addMember: jest.fn(),
       deleteProject: jest.fn(),
-      getProjectsByUserId: jest.fn(),
-      getProjectByProjectName: jest.fn(),
-      getUserRole: jest.fn(),
-      getProjectMembers: jest.fn(),
-      saveProjectWithOwner: jest.fn(),
     } as unknown as jest.Mocked<ProjectService>;
 
-    authServiceMock = {
-      users$: of([{ userId: 1, userName: 'Test User' }] as User[]),
-      getUsers: jest.fn(),
-    } as unknown as jest.Mocked<AuthService>;
+    mockTaskService = {
+      createTask: jest.fn(),
+      assignTaskToUser: jest.fn(),
+      tasks$: of([]),
+      getTasks: jest.fn(),
+    } as unknown as jest.Mocked<TaskService>;
 
-    routerMock = {
-      navigate: jest.fn(),
-      url: '/some-path',
-    } as unknown as jest.Mocked<Router>;
+    mockAuthService = {} as jest.Mocked<AuthService>;
+
+    mockRouter = {
+      url: '/projects',
+    } as jest.Mocked<Router>;
 
     await TestBed.configureTestingModule({
       declarations: [ProjectItemComponent],
       providers: [
-        { provide: ProjectService, useValue: projectServiceMock },
-        { provide: AuthService, useValue: authServiceMock },
-        { provide: Router, useValue: routerMock },
+        { provide: ProjectService, useValue: mockProjectService },
+        { provide: TaskService, useValue: mockTaskService },
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: Router, useValue: mockRouter },
       ],
+      imports: [FormsModule],
     }).compileComponents();
   });
 
@@ -53,81 +54,106 @@ describe('ProjectItemComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
+  it('should initialize with task observable', () => {
+    expect(component.tasks$).toBe(mockTaskService.tasks$);
   });
 
-  it('should initialize roles$ and users$ on ngOnInit', () => {
-    component.ngOnInit();
-    expect(projectServiceMock.getRoles).toHaveBeenCalled();
-    expect(authServiceMock.getUsers).toHaveBeenCalled();
+  it('should get the correct username for a given user ID', () => {
+    component.users = [{ userId: 1, userName: 'Alice' } as User];
+    expect(component.getUserName(1)).toBe('Alice');
+    expect(component.getUserName(2)).toBeUndefined();
   });
 
-  it('should set showMembersPopin to true on calling onSeeMembers', () => {
-    component.onSeeMembers(1);
+  it('should open and close task form', () => {
+    component.onShowAddTaskForm();
+    expect(component.showAddTaskForm).toBe(true);
+
+    component.closeTaskForm();
+    expect(component.showAddTaskForm).toBe(false);
+  });
+
+  it('should add a task when form is valid', () => {
+    const mockForm = {
+      value: {
+        taskName: 'New Task',
+        taskDescription: 'Task Description',
+        taskPriority: 'HIGH',
+        taskDueDate: new Date(),
+      },
+      form: {
+        markAllAsTouched: jest.fn(),
+        invalid: false,
+      },
+      reset: jest.fn(),
+    } as unknown as NgForm;
+
+    component.onAddTask(mockForm, 1);
+
+    expect(mockTaskService.createTask).toHaveBeenCalledWith(
+      'New Task',
+      'Task Description',
+      'HIGH',
+      'TODO',
+      mockForm.value.taskDueDate,
+      1
+    );
+    expect(mockForm.reset).toHaveBeenCalled();
+  });
+
+  it('should add a member to the project', () => {
+    const mockUser = { userId: 1 } as User;
+    const mockProject = { id: 2 } as Project;
+
+    component.onAddMember(mockUser, mockProject);
+
+    expect(mockProjectService.addMember).toHaveBeenCalledWith(1, 2);
+  });
+
+  it('should change the role of a user in a project', () => {
+    const mockProject = { id: 2 } as Project;
+    const mockEvent = { target: { value: 'Manager' } } as unknown as Event;
+
+    component.onChangeRole(1, mockProject, mockEvent);
+
+    expect(mockProjectService.changeRole).toHaveBeenCalledWith(1, 2, 'Manager');
+  });
+
+  it('should assign a task to a user', () => {
+    const mockUser = { userId: 1 } as User;
+    component.toAssignTask = { id: 2 } as Task;
+
+    component.onAssignTaskToUser(mockUser);
+
+    expect(mockTaskService.assignTaskToUser).toHaveBeenCalledWith(1, 2);
+  });
+
+  it('should delete a project', () => {
+    component.onDeleteProject(1);
+    expect(mockProjectService.deleteProject).toHaveBeenCalledWith(1);
+  });
+
+  it('should toggle the visibility of tasks', () => {
+    component.showTasks = false;
+    component.onShowTasks();
+    expect(component.showTasks).toBe(true);
+
+    component.onShowTasks();
+    expect(component.showTasks).toBe(false);
+  });
+
+  it('should show members popin', () => {
+    component.onSeeMembers();
     expect(component.showMembersPopin).toBe(true);
   });
 
-  it('should call changeRole with correct parameters', () => {
-    const project = { id: 1 } as Project;
-    const event = { target: { value: 'Contributor' } } as unknown as Event;
+  it('should correctly determine if a user is not a project member', () => {
+    const project = {
+      members: [{ id: { userId: 2 } }],
+    } as Project;
 
-    component.onChangeRole(2, project, event);
-
-    expect(projectServiceMock.changeRole).toHaveBeenCalledWith(2, project.id, 'Contributor');
-  });
-
-  it('should call addMember with correct parameters', () => {
-    const user = { userId: 2 } as User;
-    const project = { id: 3 } as Project;
-
-    component.onAddMember(user, project);
-
-    expect(projectServiceMock.addMember).toHaveBeenCalledWith(user.userId, project.id);
-  });
-
-  it('should return true if user is not a member of the project', () => {
     const user = { userId: 1 } as User;
-    const project = { members: [{ id: { userId: 2 } }] } as Project;
 
-    const result = component.isUserNotMember(project, user);
-
-    expect(result).toBe(true);
-  });
-
-  it('should return false if user is a member of the project', () => {
-    const user = { userId: 1 } as User;
-    const project = { members: [{ id: { userId: 1 } }] } as Project;
-
-    const result = component.isUserNotMember(project, user);
-
-    expect(result).toBe(false);
-  });
-
-  it('should call deleteProject with correct parameter', () => {
-    component.onDeleteProject(3);
-
-    expect(projectServiceMock.deleteProject).toHaveBeenCalledWith(3);
-  });
-
-  it('should set showInvitePopin to true on calling onInviteUsers', () => {
-    const event = new MouseEvent('click');
-    component.onInviteUsers(event, 1);
-
-    expect(component.showInvitePopin).toBe(true);
-  });
-
-  it('should set showInvitePopin to false on calling closeInvitePopin', () => {
-    component.showInvitePopin = true;
-    component.closeInvitePopin();
-
-    expect(component.showInvitePopin).toBe(false);
-  });
-
-  it('should set showMembersPopin to false on calling closeMembersPopin', () => {
-    component.showMembersPopin = true;
-    component.closeMembersPopin();
-
-    expect(component.showMembersPopin).toBe(false);
+    expect(component.isUserNotMember(project, user)).toBe(true);
+    expect(component.isUserNotMember(project, { userId: 2 } as User)).toBe(false);
   });
 });

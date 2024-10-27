@@ -1,7 +1,7 @@
 <form (ngSubmit)="onSubmit(f)" #f="ngForm">
   <div>
     <div class="mb-3">
-      <label for="inputUsername" class="form-label">Username</label>
+      <label for="inputUsername" class="form-label">Nom d'utilisateur</label>
       <input
         type="string"
         name="username"
@@ -23,7 +23,7 @@
         class="invalid-feedback"
         *ngIf="username.errors['required']"
       >
-        Le username ne peut pas être vide
+        Le nom d'utilisateur ne peut pas être vide
       </ng-container>
     </div>
     <div *ngIf="!isTryingToLogin">
@@ -56,7 +56,7 @@
       </div>
     </div>
     <div class="mb-3">
-      <label for="inputPassword" class="form-label">Password</label>
+      <label for="inputPassword" class="form-label">Mot de passe</label>
       <input
         type="password"
         id="inputPassword"
@@ -77,7 +77,7 @@
         class="invalid-feedback"
         *ngIf="password.errors['required']"
       >
-        Le password ne peut pas être vide
+        Le mot de passe ne peut pas être vide
       </ng-container>
     </div>
 

@@ -103,7 +103,7 @@ export class ProjectService {
   getRoles () {
     this.apiService.getRoles().subscribe({
       next: (res) => {
-        console.log('res: ' + res);
+        console.log('res roles: ' + res);
         try {
           this.rolesSubject.next(res); // Update the rolesSubject with the fetched roles
           this.toastService.addToast('Roles fetched !');

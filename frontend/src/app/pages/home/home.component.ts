@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../service/auth.service';
+import { AuthService, User } from '../../service/auth.service';
 import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
+import { TaskService } from '../../service/task.service';
+import { Observable } from 'rxjs';
 
 @Component({
   templateUrl: './home.component.html',
@@ -17,16 +19,29 @@ export class HomeComponent implements OnInit {
   currentProjectDescription: string = '';
   currentStartDate: Date = new Date();
 
+  priorities$: Observable<string[]>;
+  statuses$: Observable<string[]>;
+  roles$: Observable<string[]>;
+  users$: Observable<User[]>;
+
   constructor(
     private authService: AuthService,
+    private taskService: TaskService,
     private router: Router,
     private projectService: ProjectService
   ) {
     console.log('isLoggedIn on home: ' + this.isLoggedIn);
     this.isLoggedIn = this.authService.isLoggedIn;
+    this.roles$ = this.projectService.roles$;
+    this.users$ = this.authService.users$;
+    this.priorities$ = this.taskService.priorities$;
+    this.statuses$ = this.taskService.statuses$;
   }
 
   onAddProject (form: NgForm) {
+
+    const formValues = form.value;
+    console.log(formValues);
     //valider tous les champs
     form.form.markAllAsTouched();
 
@@ -35,9 +50,9 @@ export class HomeComponent implements OnInit {
     }
 
     this.projectService.addProject(
-      this.currentProjectName,
-      this.currentProjectDescription,
-      this.currentStartDate
+      formValues.currentProjectName,
+      formValues.currentProjectDescription,
+      formValues.currentStartDate
     );
 
     form.reset();
@@ -45,6 +60,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isAuthenticated();
+    this.projectService.getRoles();
+    this.taskService.getPriorities();
+    this.taskService.getStatuses();
+    this.authService.getUsers();
     if (this.isLoggedIn) {
       const loggedInUserId = localStorage.getItem('loggedInUserId');
       if (loggedInUserId) {

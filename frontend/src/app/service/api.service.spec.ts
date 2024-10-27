@@ -264,5 +264,117 @@ describe('ApiService', () => {
     });
   });
 
+  describe('getPriorities', () => {
+    it('should retrieve priorities', () => {
+      const mockPriorities: string[] = ['LOW', 'MEDIUM', 'HIGH'];
+
+      service.getPriorities().subscribe((priorities) => {
+        expect(priorities).toEqual(mockPriorities);
+      });
+
+      const req = httpMock.expectOne('http://localhost:8081/api/priorities');
+      expect(req.request.method).toBe('GET');
+      req.flush(mockPriorities);
+    });
+  });
+
+
+  describe('getStatuses', () => {
+    it('should retrieve statuses', () => {
+      const mockStatuses: string[] = ['TODO', 'IN_PROGRESS', 'DONE'];
+
+      service.getStatuses().subscribe((statuses) => {
+        expect(statuses).toEqual(mockStatuses);
+      });
+
+      const req = httpMock.expectOne('http://localhost:8081/api/statuses');
+      expect(req.request.method).toBe('GET');
+      req.flush(mockStatuses);
+    });
+  });
+
+  describe('getUsers', () => {
+    it('should retrieve users', () => {
+      const mockUsers: string[] = ['Alice', 'Bob', 'Charlie'];
+
+      service.getUsers().subscribe((users) => {
+        expect(users).toBeDefined();
+      });
+
+      const req = httpMock.expectOne('http://localhost:8081/api/users');
+      expect(req.request.method).toBe('GET');
+      req.flush(mockUsers);
+    });
+  });
+
+  describe('getTasks', () => {
+    it('should retrieve tasks', () => {
+      const mockTasks: string[] = ['Task 1', 'Task 2', 'Task 3'];
+
+      service.getTasks().subscribe((tasks) => {
+        expect(tasks).toBeDefined();
+      });
+
+      const req = httpMock.expectOne('http://localhost:8081/api/tasks');
+      expect(req.request.method).toBe('GET');
+      req.flush(mockTasks);
+    });
+  });
+
+
+  describe('assignTaskToUser ', () => {
+    it('should assign a task to a user', () => {
+      const mockResponse: CreatedResponse = { id: 1 };
+
+      service.assignTaskToUser(1, 1).subscribe((response) => {
+        expect(response).toEqual(mockResponse);
+      });
+
+      const req = httpMock.expectOne(
+        (request) =>
+          request.url === 'http://localhost:8081/api/task/assign' &&
+          request.params.get('userId') === '1' &&
+          request.params.get('taskId') === '1'
+      );
+      expect(req.request.method).toBe('POST');
+      req.flush(mockResponse);
+    });
+  });
+
+
+  describe('createTask ', () => {
+    it('should create a task', () => {
+      const mockResponse: CreatedResponse = { id: 1 };
+      const mockTaskRequest = {
+        task: {
+          id: 1,
+          name: 'Task 1',
+          description: 'Test task',
+          priority: 'HIGH',
+          status: 'TODO',
+          dueDate: new Date(),
+        },
+        projectId: 1,
+      };
+
+      service
+        .createTask(
+          'Task 1',
+          'Test task',
+          'HIGH',
+          'TODO',
+          new Date(),
+          1
+        )
+        .subscribe((response) => {
+          expect(response).toEqual(mockResponse);
+        });
+
+      const req = httpMock.expectOne('http://localhost:8081/api/task');
+      expect(req.request.method).toBe('POST');
+      req.flush(mockResponse);
+    });
+  });
+
 
 });

@@ -91,6 +91,17 @@ describe('TaskService', () => {
 
       expect(toastServiceMock.addToast).toHaveBeenCalledWith('Priorities not fetched !');
     });
+
+    it('should fetch priorities and update prioritiesSubject on success', () => {
+      const priorities = ['LOW', 'MEDIUM', 'HIGH'];
+      apiServiceMock.getPriorities.mockReturnValue(of(priorities));
+
+      service.getPriorities();
+
+      expect(apiServiceMock.getPriorities).toHaveBeenCalled();
+      expect(service.prioritiesSubject.value).toEqual(priorities);
+      expect(toastServiceMock.addToast).toHaveBeenCalledWith('Priorities fetched !');
+    });
   });
 
   describe('getStatuses', () => {

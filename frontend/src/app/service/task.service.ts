@@ -99,7 +99,7 @@ export class TaskService {
         console.log('res priorities: ' + res);
         try {
           this.prioritiesSubject.next(res);
-          this.toastService.addToast('Prioritiesetched !');
+          this.toastService.addToast('Priorities fetched !');
         } catch (error) {
           this.toastService.addToast('Priorities not fetched !');
         }

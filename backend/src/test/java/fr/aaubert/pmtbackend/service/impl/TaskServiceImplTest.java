@@ -1,10 +1,7 @@
 package fr.aaubert.pmtbackend.service.impl;
 
 
-import fr.aaubert.pmtbackend.model.Project;
-import fr.aaubert.pmtbackend.model.Task;
-import fr.aaubert.pmtbackend.model.TaskMember;
-import fr.aaubert.pmtbackend.model.User;
+import fr.aaubert.pmtbackend.model.*;
 import fr.aaubert.pmtbackend.repository.ProjectRepository;
 import fr.aaubert.pmtbackend.repository.TaskMemberRepository;
 import fr.aaubert.pmtbackend.repository.TaskRepository;
@@ -56,8 +53,8 @@ class TaskServiceImplTest {
         task.setName("New Task");
         task.setDescription("Task description");
         task.setDueDate(new Date());
-        task.setPriority("High");
-        task.setStatus("Pending");
+        task.setPriority(TaskPriority.HIGH);
+        task.setStatus(TaskStatus.TODO);
         task.setProject(project);
 
         when(taskRepository.save(any(Task.class))).thenReturn(task);
@@ -68,7 +65,7 @@ class TaskServiceImplTest {
         // Assert
         assertNotNull(createdTask);
         assertEquals("New Task", createdTask.getName());
-        assertEquals("High", createdTask.getPriority());
+        assertEquals("HIGH", createdTask.getPriority().toString());
         verify(taskRepository, times(1)).save(any(Task.class));
     }
 
@@ -108,8 +105,8 @@ class TaskServiceImplTest {
         task.setName("New Task");
         task.setDescription("Task description");
         task.setDueDate(new Date());
-        task.setPriority("High");
-        task.setStatus("Pending");
+        task.setPriority(TaskPriority.HIGH);
+        task.setStatus(TaskStatus.TODO);
 
         when(projectRepository.findById(1L)).thenReturn(Optional.empty());
 

@@ -1,9 +1,7 @@
 package fr.aaubert.pmtbackend.controller;
 
 
-import fr.aaubert.pmtbackend.model.Task;
-import fr.aaubert.pmtbackend.model.TaskMember;
-import fr.aaubert.pmtbackend.model.TaskRequest;
+import fr.aaubert.pmtbackend.model.*;
 import fr.aaubert.pmtbackend.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,4 +46,18 @@ public class TaskController {
         List<Task> tasks = taskService.getTasksByProjectId(projectId);
         return ResponseEntity.ok(tasks);
     }
+
+    @GetMapping("/priorities")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<TaskPriority> getAllPriorities() {
+        return List.of(TaskPriority.values());
+    }
+
+
+    @GetMapping("/statuses")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<TaskStatus> getAllStatuses() {
+        return List.of(TaskStatus.values());
+    }
+
 }

@@ -23,9 +23,11 @@ public class Task {
     @Temporal(TemporalType.DATE)
     private Date dueDate;
 
-    private String priority; // e.g., "High", "Medium", "Low"
+    @Enumerated(EnumType.STRING)
+    private TaskPriority priority;
 
-    private String status; // e.g., "Pending", "Completed", "In Progress"
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)

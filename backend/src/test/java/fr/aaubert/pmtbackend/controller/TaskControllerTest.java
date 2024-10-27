@@ -3,6 +3,7 @@ package fr.aaubert.pmtbackend.controller;
 
 import fr.aaubert.pmtbackend.model.Task;
 import fr.aaubert.pmtbackend.model.TaskMember;
+import fr.aaubert.pmtbackend.model.TaskPriority;
 import fr.aaubert.pmtbackend.model.TaskRequest;
 import fr.aaubert.pmtbackend.service.TaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.Date;
@@ -21,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,7 +49,7 @@ class TaskControllerTest {
         task.setName("New Task");
         task.setDescription("Task description");
         task.setDueDate(new Date());
-        task.setPriority("High");
+        task.setPriority(TaskPriority.HIGH);
 
         TaskRequest taskRequest = new TaskRequest();
         taskRequest.setTask(task);
@@ -95,4 +100,19 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Task 1"))
                 .andExpect(jsonPath("$[1].name").value("Task 2"));
     }
+
+    @Test
+    void getAllPriorities_shouldReturnPrioritiesList_whenValidRequest() throws Exception {
+        mockMvc.perform(get("/api/priorities"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void getAllStatuses_shouldReturnStatusesList_whenValidRequest() throws Exception {
+        mockMvc.perform(get("/api/statuses"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
 }

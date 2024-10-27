@@ -8,6 +8,7 @@ import { Injectable } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Project } from './project.service';
 import { User } from './auth.service';
+import { Task, TaskRequest } from './task.service';
 
 export interface LoginResponse {
   userId: string;
@@ -57,6 +58,18 @@ export class ApiService {
   getRoles () {
     return this.httpClient
       .get<string[]>(`${this.apiUrl}/roles`)
+      .pipe(catchError(this.catchError));
+  }
+
+  getPriorities () {
+    return this.httpClient
+      .get<string[]>(`${this.apiUrl}/priorities`)
+      .pipe(catchError(this.catchError));
+  }
+
+  getStatuses () {
+    return this.httpClient
+      .get<string[]>(`${this.apiUrl}/statuses`)
       .pipe(catchError(this.catchError));
   }
 
@@ -120,6 +133,43 @@ export class ApiService {
   getUsers () {
     return this.httpClient
       .get<User[]>(`${this.apiUrl}/users`)
+      .pipe(catchError(this.catchError));
+  }
+
+  
+  createTask (name: string, description: string, priority: string, status: string, dueDate: Date, projectId: number) {
+
+    const taskRequest: TaskRequest = {
+      task: {
+        id:0,
+        name: name,
+        description: description,
+        priority: priority,
+        dueDate: dueDate,
+        status: status
+      },
+      projectId: projectId,
+    };
+
+    return this.httpClient
+      .post<CreatedResponse>(`${this.apiUrl}/task`, taskRequest)
+      .pipe(catchError(this.catchError));
+
+    }
+
+  assignTaskToUser (taskId: number, userId: number) {
+    const params = new HttpParams()
+      .set('taskId', taskId)
+      .set('userId', userId);
+
+    return this.httpClient
+      .post<unknown>(`${this.apiUrl}/task/assign`, null, { params })
+      .pipe(catchError(this.catchError));
+  }
+
+  getTasks () {
+    return this.httpClient
+      .get<Task[]>(`${this.apiUrl}/tasks`)
       .pipe(catchError(this.catchError));
   }
 

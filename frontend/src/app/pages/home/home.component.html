@@ -1,6 +1,6 @@
 <nav class="navbar header bg-primary">
   <div class="container-fluid">
-    <a class="navbar-brand"> PMT - Project Management Tool - Home page</a>
+    <a class="navbar-brand"> PMT - Project Management Tool - Accueil</a>
 
     <div>
       <button class="btn btn-danger" (click)="logout()" *ngIf="isLoggedIn">
@@ -10,22 +10,15 @@
   </div>
 </nav>
 
-<div class="text-center mt-5">You are logged in !</div>
+<div class="text-center mt-5">Bienvenue, vous êtes connecté !</div>
 <div class="container mt-5">
     <form class="row mb-3" (ngSubmit)="onAddProject(fproject)" #fproject="ngForm">
     <h1>Projets</h1>
     <div class="form-row align-items-center">
       <div class="col-md-4">
         <div class="form-group">
-          <label for="projectName">Project Name</label>
-          <input class="form-control"
-           id="projectName" 
-           name="currentProjectName" 
-           type="string" 
-           #currentProjectName="ngModel" 
-           ngModel 
-           required 
-           placeholder="Enter project name" />
+          <label for="projectName">Nom du projet</label>
+          <input class="form-control" id="projectName" name="currentProjectName" type="string" #currentProjectName="ngModel" ngModel required placeholder="Entrez le nom du projet">
         </div>
         <div class="invalid-feedback" *ngIf="currentProjectName.touched && currentProjectName.invalid && currentProjectName.errors">
       <ng-container class="invalid-feedback" *ngIf="currentProjectName.errors['required']">
@@ -36,13 +29,13 @@
       <div class="col-md-4">
         <div class="form-group">
           <label for="projectDescription">Description</label>
-          <input class="form-control" id="projectDescription" name="currentProjectDescription" #currentProjectDescription="ngModel" ngModel placeholder="Enter project description" rows="1"/>
+          <input class="form-control" id="projectDescription" name="currentProjectDescription" #currentProjectDescription="ngModel" ngModel placeholder="Entrez une description" rows="1">
         </div>
       </div>
       <div class="col-md-4">
         <div class="form-group">
-          <label for="projectStartDate">Start Date</label>
-          <input class="form-control" id="projectStartDate" name="currentStartDate" type="date" #currentStartDate="ngModel" ngModel/>
+          <label for="projectStartDate">Date de début</label>
+          <input class="form-control" id="projectStartDate" name="currentStartDate" type="date" #currentStartDate="ngModel" ngModel>
         </div>
       </div>
       <div class="col-2 d-flex align-items-center justify-content-center">
@@ -53,9 +46,21 @@
     </div>
 </form>
     <div class="row mb-3">
-      <ng-container *ngFor="let project of projects">
-        <app-project-item [project]="project"></app-project-item>
-      </ng-container>
+      <div *ngIf="users$ | async as users;">
+        <div *ngIf="priorities$ | async as priorities;">
+          <div *ngIf="statuses$ | async as statuses;">
+          <div *ngIf="roles$ | async as roles;">
+            <ng-container *ngFor="let project of projects">
+              <app-project-item
+              [project]="project"
+              [users]="users" 
+              [roles]="roles"
+              [priorities]="priorities"
+              [statuses]="statuses"></app-project-item>
+            </ng-container>
+          </div>
+        </div>
+        </div>
+      </div>
     </div>
-  </div>
-
+</div>

@@ -2,7 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../service/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import { Task, TaskService } from '../../service/task.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-project-item',
@@ -12,23 +14,67 @@ import { Observable } from 'rxjs';
 export class ProjectItemComponent implements OnInit {
 
   @Input() project?: Project;
+  @Input() roles: string[] = [];
+  @Input() users: User[] = [];
+  @Input() priorities: string[] = [];
+  @Input() statuses: string[] = [];
+
   showInvitePopin: boolean = false;
-  showMembersPopin = false;
+  showMembersPopin: boolean = false;
+  showTasks: boolean = false;
+  showAddTaskForm: boolean = false;
   loggedInUserId = parseInt(localStorage.getItem('loggedInUserId') ?? "0");
 
-  roles$: Observable<string[]>;
-  users$: Observable<User[]>;
+  tasks$: Observable<Task[]>;
+
+  taskName: string = '';
+  taskDescription: string = '';
+  taskPriority: string = 'MEDIUM';
+  taskStatus: string = '';
+  taskDueDate: Date = new Date();
+
 
   constructor(private projectService: ProjectService,
+    private taskService: TaskService,
     private authService: AuthService,
     private router: Router) {
+    this.tasks$ = this.taskService.tasks$;
     console.log(this.router.url);
-    this.roles$ = this.projectService.roles$;
-    this.users$ = this.authService.users$;
   }
 
-  onSeeMembers(projectId: number) {
-      this.showMembersPopin = true;
+
+  onAddTask (formTask: NgForm, projectId: number) {
+
+    const taskformValues = formTask.value;
+    console.log("taskformValues : " + taskformValues);
+
+    //valider tous les champs
+    formTask.form.markAllAsTouched();
+
+    if (formTask.invalid) {
+      return;
+    }
+
+    this.taskService.createTask(
+      taskformValues.taskName,
+      taskformValues.taskDescription,
+      taskformValues.taskPriority,
+      "TODO",
+      taskformValues.taskDueDate,
+      projectId
+    );
+
+    formTask.reset();
+    this.closeTaskForm();
+    this.showTasks = false;
+  }
+
+  onSeeMembers () {
+    this.showMembersPopin = true;
+  }
+
+  onShowAddTaskForm () {
+    this.showAddTaskForm = true;
   }
 
   onChangeRole (userId: number, project: Project, event: Event) {
@@ -42,25 +88,36 @@ export class ProjectItemComponent implements OnInit {
     this.projectService.addMember(user.userId, project.id);
   }
 
-  isUserNotMember(project: Project, user: User): boolean {
-  return !project.members?.some(member => member.id.userId === user.userId);
-}
+  isUserNotMember (project: Project, user: User): boolean {
+    return !project.members?.some(member => member.id.userId === user.userId);
+  }
 
   onDeleteProject (id: number) {
     console.log("deleting project with id: " + id);
     this.projectService.deleteProject(id);
   }
 
-  onClickItem (clicked_project: Project) {
-    //TODO
+  onShowTasks () {
+    this.showTasks = !this.showTasks;
   }
   onInviteUsers (event: Event, projectId: number) {
     event.stopPropagation();
     this.showInvitePopin = true;
-      }
+  }
 
   closeInvitePopin () {
     this.showInvitePopin = false;
+  }
+
+  closeTasks () {
+    this.showTasks = false;
+  }
+
+  closeTaskForm () {
+    this.showAddTaskForm = false;
+    if (this.project) {
+      this.taskService.getTasks();
+    }
   }
 
   closeMembersPopin () {
@@ -68,8 +125,10 @@ export class ProjectItemComponent implements OnInit {
   }
 
   ngOnInit (): void {
-    this.projectService.getRoles();
-    this.authService.getUsers();
+    if (this.project) {
+      this.taskService.getTasks();
+    }
   }
+
 
 }

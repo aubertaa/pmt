@@ -9,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -39,12 +42,23 @@ public class TaskController {
     }
 
 
-    // Endpoint pour lister les tâches d'un projet spécifique
     @GetMapping("/tasks")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<List<Task>> getTasksByProjectId(@RequestParam("projectId") Long projectId) {
-        List<Task> tasks = taskService.getTasksByProjectId(projectId);
-        return ResponseEntity.ok(tasks);
+    public ResponseEntity<List<Map<String, Object>>> getTasks() {
+        List<Map<String, Object>> taskMaps = taskService.getTasks().stream()
+                .map(task -> {
+                    Map<String, Object> taskMap = new HashMap<>();
+                    taskMap.put("id", task.getId());
+                    taskMap.put("name", task.getName());
+                    taskMap.put("description", task.getDescription());
+                    taskMap.put("dueDate", task.getDueDate());
+                    taskMap.put("priority", task.getPriority());
+                    taskMap.put("status", task.getStatus());
+                    taskMap.put("projectId", task.getProject().getProjectId()); // Adding projectId
+                    return taskMap;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(taskMaps);
     }
 
     @GetMapping("/priorities")

@@ -3,6 +3,7 @@ package fr.aaubert.pmtbackend.service;
 import fr.aaubert.pmtbackend.model.Task;
 import fr.aaubert.pmtbackend.model.TaskMember;
 
+import java.util.Arrays;
 import java.util.List;
 
 public interface TaskService {
@@ -15,4 +16,6 @@ public interface TaskService {
 
     // Méthode pour récupérer les tâches d'un projet spécifique
     List<Task> getTasksByProjectId(Long projectId);
+
+    List<Task> getTasks();
 }

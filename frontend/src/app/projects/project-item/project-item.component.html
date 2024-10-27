@@ -58,20 +58,55 @@
             <th>Priorité</th>
             <th>Statut</th>
             <th>Echéance</th>
+            <th>Assignée à</th>
           </tr>
         </thead>
         <tbody>
           <ng-container *ngFor="let task of tasks$ | async">
             <ng-container *ngIf="task.projectId === project?.id">
-              <tr>
+              <tr (click)="openAssignPopin($event, task)">
                 <td>{{ task?.id}}</td>
                 <td>{{ task?.name  }}</td>
                 <td>{{ task?.description }}</td>
                 <td>{{ task?.priority }}</td>
                 <td>{{ task?.status }}</td>
                 <td>{{ task?.dueDate | date: 'longDate' }}</td>
+                <td>{{ getUserName(task?.assignedTo) }}</td>
               </tr>
             </ng-container>
+                        
+            <!-- Popin for assigning members -->
+            <div class="invite-popin" *ngIf="showAssignPopin">
+              <div class="popin-content">
+                <h4>Assigner la tâche</h4>
+                <em>(Membres du projet uniquement)</em>
+
+                <div *ngIf="users else noUsers ">
+                  <table class="user-table">
+                    <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nom</th>
+                      <th>Email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <ng-container *ngFor="let user of users">
+                      <tr *ngIf="!isUserNotMember(project, user)" (click)="onAssignTaskToUser(user)">
+                        <td>{{ user.userId }}</td>
+                        <td>{{ user.userName }}</td>
+                        <td>{{ user.email }}</td>
+                      </tr>
+                    </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+                <ng-template #noUsers="">
+                  <p>Personne n'est disponible sur ce projet</p>
+                </ng-template>
+                <button class="btn btn-secondary close-button" (click)="closeAssignPopin()">Fermer</button>
+              </div>
+            </div>
           </ng-container>
         </tbody>
       </table>
@@ -121,7 +156,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Popin for inviting users -->
 <div class="invite-popin" *ngIf="showInvitePopin && project">

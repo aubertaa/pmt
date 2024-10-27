@@ -98,6 +98,77 @@ class TaskServiceImplTest {
     }
 
     @Test
+    void getTaskMemberUser_shouldReturnTaskMember_whenTaskMemberExists() {
+        // Arrange
+        Task task = new Task();
+        task.setId(1L);
+
+        User user = new User();
+        user.setUserId(1L);
+
+        TaskMember taskMember = new TaskMember();
+        taskMember.setTask(task);
+        taskMember.setUser(user);
+
+        when(taskMemberRepository.findByTaskId(1L)).thenReturn(taskMember);
+
+        // Act
+        Long result = taskServiceImpl.getTaskMemberUser(1L);
+
+        // Assert
+        assertNotNull(result);
+        verify(taskMemberRepository, times(1)).getMemberUserIdByTaskId(1L);
+    }
+
+    @Test
+    void getTasks_shouldReturnTasks_whenTasksExist() {
+        // Arrange
+        Task task1 = new Task();
+        task1.setId(1L);
+        task1.setName("Task 1");
+
+        Task task2 = new Task();
+        task2.setId(2L);
+        task2.setName("Task 2");
+
+        List<Task> tasks = List.of(task1, task2);
+
+        when(taskRepository.findAll()).thenReturn(tasks);
+
+        // Act
+        List<Task> result = taskServiceImpl.getTasks();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(taskRepository, times(1)).findAll();
+    }
+
+    @Test
+    void assignTaskToUser_shouldUpdateTaskMember_whenTaskAlreadyHasUserAssigned() {
+        // Arrange
+        Task task = new Task();
+        task.setId(1L);
+
+        User user = new User();
+        user.setUserId(1L);
+
+        TaskMember taskMember = new TaskMember();
+        taskMember.setTask(task);
+        taskMember.setUser(user);
+
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(taskMemberRepository.findByTaskId(1L)).thenReturn(taskMember);
+
+        // Act
+        TaskMember assignedTaskMember = taskServiceImpl.assignTaskToUser(1L, 1L);
+
+        // Assert
+        verify(taskMemberRepository, times(1)).save(taskMember);
+    }
+
+    @Test
     void createTask_shouldThrowException_whenProjectDoesNotExist() {
         // Arrange
 

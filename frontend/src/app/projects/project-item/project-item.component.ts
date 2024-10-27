@@ -20,6 +20,7 @@ export class ProjectItemComponent implements OnInit {
   @Input() statuses: string[] = [];
 
   showInvitePopin: boolean = false;
+  showAssignPopin: boolean = false;
   showMembersPopin: boolean = false;
   showTasks: boolean = false;
   showAddTaskForm: boolean = false;
@@ -32,6 +33,7 @@ export class ProjectItemComponent implements OnInit {
   taskPriority: string = 'MEDIUM';
   taskStatus: string = '';
   taskDueDate: Date = new Date();
+  toAssignTask?: Task;
 
 
   constructor(private projectService: ProjectService,
@@ -42,6 +44,10 @@ export class ProjectItemComponent implements OnInit {
     console.log(this.router.url);
   }
 
+
+  getUserName (user_id: number | undefined) {
+    return this.users.find(user => user.userId === user_id)?.userName;
+  }
 
   onAddTask (formTask: NgForm, projectId: number) {
 
@@ -66,7 +72,6 @@ export class ProjectItemComponent implements OnInit {
 
     formTask.reset();
     this.closeTaskForm();
-    this.showTasks = false;
   }
 
   onSeeMembers () {
@@ -88,6 +93,20 @@ export class ProjectItemComponent implements OnInit {
     this.projectService.addMember(user.userId, project.id);
   }
 
+  onAssignTaskToUser (user: User) {
+    console.log('line clicked' + user.toString());
+    if (this.toAssignTask) {
+      this.taskService.assignTaskToUser(user.userId, this.toAssignTask.id);
+    }
+    this.closeAssignPopin();
+  }
+
+  openAssignPopin (event: Event, task: Task) {
+    event.stopPropagation();
+    this.toAssignTask = task;
+    this.showAssignPopin = true;
+  }
+
   isUserNotMember (project: Project, user: User): boolean {
     return !project.members?.some(member => member.id.userId === user.userId);
   }
@@ -107,6 +126,14 @@ export class ProjectItemComponent implements OnInit {
 
   closeInvitePopin () {
     this.showInvitePopin = false;
+  }
+
+  closeAssignPopin () {
+    this.showAssignPopin = false;
+    this.toAssignTask = undefined;
+    if (this.project) {
+      this.taskService.getTasks();
+    }
   }
 
   closeTasks () {

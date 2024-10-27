@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { ToastService } from './toast.service';
+import { User } from './auth.service';
 
 export interface Task {
   id: number;
@@ -11,6 +12,7 @@ export interface Task {
   status: string;
   dueDate: Date;
   projectId?: number;
+  assignedTo?: number;
 }
 
 export interface TaskMember {
@@ -60,8 +62,8 @@ export class TaskService {
     });
   }
 
-  assignTaskToUser (taskId: number, userId: number, projectId: number) {
-    this.apiService.addProjectMember(userId, taskId).subscribe({
+  assignTaskToUser (userId: number, taskId: number) {
+    this.apiService.assignTaskToUser(userId, taskId).subscribe({
       next: () => {
         this.getTasks();
         this.toastService.addToast('Task added to project !');

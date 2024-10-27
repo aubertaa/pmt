@@ -45,10 +45,19 @@ public class TaskServiceImpl implements TaskService {
         Optional<User> user = userRepository.findById(userId);
 
         if (task.isPresent() && user.isPresent()) {
-            TaskMember taskMember = new TaskMember();
-            taskMember.setTask(task.get());
-            taskMember.setUser(user.get());
+            TaskMember taskMember = taskMemberRepository.findByTaskId(taskId);
+
+            if (taskMember != null) {
+                // Task already has a user assigned, update to new user
+                taskMember.setUser(user.get());
+            } else {
+                // No TaskMember exists, create a new one
+                taskMember = new TaskMember();
+                taskMember.setTask(task.get());
+                taskMember.setUser(user.get());
+            }
             return taskMemberRepository.save(taskMember);
+
         }
         throw new RuntimeException("Task or User not found");
     }

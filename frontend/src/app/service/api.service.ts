@@ -157,7 +157,7 @@ export class ApiService {
 
     }
 
-  assignTaskToUser (taskId: number, userId: number) {
+  assignTaskToUser (userId: number, taskId: number) {
     const params = new HttpParams()
       .set('taskId', taskId)
       .set('userId', userId);

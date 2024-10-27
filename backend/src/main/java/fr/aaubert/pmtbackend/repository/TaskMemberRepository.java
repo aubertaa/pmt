@@ -17,4 +17,9 @@ public interface TaskMemberRepository extends JpaRepository<TaskMember, Long> {
     @Query("SELECT tm.user.userId FROM TaskMember tm WHERE tm.task.id = ?1")
     Long getMemberUserIdByTaskId(Long taskId);
 
+    @Query("SELECT tm FROM TaskMember tm WHERE tm.task.id = ?1 AND tm.user.userId = ?2")
+    TaskMember findByTaskIdAndUserId(Long taskId, Long userId);
+
+    @Query("SELECT tm FROM TaskMember tm WHERE tm.task.id = ?1")
+    TaskMember findByTaskId(Long taskId);
 }

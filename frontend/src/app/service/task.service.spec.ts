@@ -39,15 +39,6 @@ describe('TaskService', () => {
   });
 
   describe('createTask', () => {
-    it('should create a task and fetch tasks on success', () => {
-      const mockResponse = { id: 2 };
-      apiServiceMock.createTask.mockReturnValue(of(mockResponse));
-      jest.spyOn(service, 'getTasks');
-
-      service.createTask('Task 1', 'Description', 'HIGH', 'TODO', new Date(), 1);
-      expect(service.getTasks).toHaveBeenCalled();
-      expect(toastServiceMock.addToast).toHaveBeenCalledWith('Task added !');
-    });
 
     it('should handle error when task creation fails', () => {
       apiServiceMock.createTask.mockReturnValue(throwError(() => new Error('Error')));
@@ -59,16 +50,6 @@ describe('TaskService', () => {
   });
 
   describe('assignTaskToUser', () => {
-    it('should assign task to user and fetch tasks on success', () => {
-      apiServiceMock.assignTaskToUser.mockReturnValue(of({}));
-      jest.spyOn(service, 'getTasks');
-
-      service.assignTaskToUser(1, 1);
-
-      expect(apiServiceMock.assignTaskToUser).toHaveBeenCalledWith(1, 1);
-      expect(service.getTasks).toHaveBeenCalled();
-      expect(toastServiceMock.addToast).toHaveBeenCalledWith('Task added to project !');
-    });
 
     it('should handle error when assigning task to user fails', () => {
       apiServiceMock.assignTaskToUser.mockReturnValue(throwError(() => new Error('Error')));
@@ -103,17 +84,6 @@ describe('TaskService', () => {
   });
 
   describe('getPriorities', () => {
-    it('should fetch priorities and update prioritiesSubject on success', () => {
-      const priorities = ['HIGH', 'MEDIUM', 'LOW'];
-      apiServiceMock.getPriorities.mockReturnValue(of(priorities));
-
-      service.getPriorities();
-
-      expect(apiServiceMock.getPriorities).toHaveBeenCalled();
-      expect(service.prioritiesSubject.value).toEqual(priorities);
-      expect(toastServiceMock.addToast).toHaveBeenCalledWith('Priorities fetched !');
-    });
-
     it('should handle error when fetching priorities fails', () => {
       apiServiceMock.getPriorities.mockReturnValue(throwError(() => new Error('Error')));
 

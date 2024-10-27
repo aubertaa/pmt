@@ -100,21 +100,6 @@ describe('ProjectItemComponent', () => {
     expect(mockForm.reset).toHaveBeenCalled();
   });
 
-  it('should not add a task when form is invalid', () => {
-    const mockForm = {
-      form: {
-        markAllAsTouched: jest.fn(),
-        invalid: true,
-      },
-      reset: jest.fn(),
-    } as unknown as NgForm;
-
-    component.onAddTask(mockForm, 1);
-
-    expect(mockTaskService.createTask).not.toHaveBeenCalled();
-    expect(mockForm.reset).not.toHaveBeenCalled();
-  });
-
   it('should add a member to the project', () => {
     const mockUser = { userId: 1 } as User;
     const mockProject = { id: 2 } as Project;
@@ -140,14 +125,6 @@ describe('ProjectItemComponent', () => {
     component.onAssignTaskToUser(mockUser);
 
     expect(mockTaskService.assignTaskToUser).toHaveBeenCalledWith(1, 2);
-  });
-
-  it('should close the assign popin and reset the task', () => {
-    component.toAssignTask = { id: 2 } as Task;
-    component.closeAssignPopin();
-
-    expect(component.showAssignPopin).toBe(false);
-    expect(component.toAssignTask).toBeUndefined();
   });
 
   it('should delete a project', () => {

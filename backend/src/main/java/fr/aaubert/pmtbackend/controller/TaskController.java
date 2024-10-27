@@ -7,6 +7,7 @@ import fr.aaubert.pmtbackend.model.TaskRequest;
 import fr.aaubert.pmtbackend.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class TaskController {
 
     // Endpoint pour créer une tâche dans un projet
     @PostMapping("/task")
+    @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<Task> createTask(@RequestBody @Valid TaskRequest taskRequest) {
         Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId());
         return ResponseEntity.ok(task);
@@ -32,6 +34,7 @@ public class TaskController {
 
     // Endpoint pour assigner une tâche à un membre
     @PostMapping("/task/assign")
+    @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam("taskId") Long taskId, @RequestParam("userId") Long userId) {
         TaskMember taskMember = taskService.assignTaskToUser(taskId, userId);
         return ResponseEntity.ok(taskMember);
@@ -40,6 +43,7 @@ public class TaskController {
 
     // Endpoint pour lister les tâches d'un projet spécifique
     @GetMapping("/tasks")
+    @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<List<Task>> getTasksByProjectId(@RequestParam("projectId") Long projectId) {
         List<Task> tasks = taskService.getTasksByProjectId(projectId);
         return ResponseEntity.ok(tasks);

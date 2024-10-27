@@ -9,7 +9,6 @@ import fr.aaubert.pmtbackend.repository.ProjectRepository;
 import fr.aaubert.pmtbackend.repository.TaskMemberRepository;
 import fr.aaubert.pmtbackend.repository.TaskRepository;
 import fr.aaubert.pmtbackend.repository.UserRepository;
-import fr.aaubert.pmtbackend.service.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -115,9 +114,7 @@ class TaskServiceImplTest {
         when(projectRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            taskServiceImpl.createTask(task, 1L);
-        });
+        assertThrows(RuntimeException.class, () -> taskServiceImpl.createTask(task, 1L));
     }
 
     @Test
@@ -126,9 +123,7 @@ class TaskServiceImplTest {
         when(taskRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            taskServiceImpl.assignTaskToUser(1L, 1L);
-        });
+        assertThrows(RuntimeException.class, () -> taskServiceImpl.assignTaskToUser(1L, 1L));
     }
 
     @Test

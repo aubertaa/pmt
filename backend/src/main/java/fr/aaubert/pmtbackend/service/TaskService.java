@@ -3,7 +3,6 @@ package fr.aaubert.pmtbackend.service;
 import fr.aaubert.pmtbackend.model.Task;
 import fr.aaubert.pmtbackend.model.TaskMember;
 
-import java.util.Date;
 import java.util.List;
 
 public interface TaskService {

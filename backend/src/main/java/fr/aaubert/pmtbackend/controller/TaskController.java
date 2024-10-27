@@ -1,7 +1,6 @@
 package fr.aaubert.pmtbackend.controller;
 
 
-import fr.aaubert.pmtbackend.model.ProjectRequest;
 import fr.aaubert.pmtbackend.model.Task;
 import fr.aaubert.pmtbackend.model.TaskMember;
 import fr.aaubert.pmtbackend.model.TaskRequest;
@@ -11,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")

@@ -1,7 +1,9 @@
 package fr.aaubert.pmtbackend.service;
 
+import fr.aaubert.pmtbackend.model.ProjectMember;
 import fr.aaubert.pmtbackend.model.Task;
 import fr.aaubert.pmtbackend.model.TaskMember;
+import fr.aaubert.pmtbackend.model.User;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,4 +20,6 @@ public interface TaskService {
     List<Task> getTasksByProjectId(Long projectId);
 
     List<Task> getTasks();
+
+    Long getTaskMemberUser(Long task_id);
 }

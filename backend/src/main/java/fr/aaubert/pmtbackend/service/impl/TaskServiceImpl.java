@@ -1,9 +1,6 @@
 package fr.aaubert.pmtbackend.service.impl;
 
-import fr.aaubert.pmtbackend.model.Project;
-import fr.aaubert.pmtbackend.model.Task;
-import fr.aaubert.pmtbackend.model.TaskMember;
-import fr.aaubert.pmtbackend.model.User;
+import fr.aaubert.pmtbackend.model.*;
 import fr.aaubert.pmtbackend.repository.ProjectRepository;
 import fr.aaubert.pmtbackend.repository.TaskMemberRepository;
 import fr.aaubert.pmtbackend.repository.TaskRepository;
@@ -66,6 +63,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getTasks() {
         return taskRepository.findAll();
+    }
+
+    @Override
+    public Long getTaskMemberUser(Long task_id) {
+        return taskMemberRepository.getMemberUserIdByTaskId(task_id);
     }
 
 }

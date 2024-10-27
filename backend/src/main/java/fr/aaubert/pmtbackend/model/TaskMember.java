@@ -7,6 +7,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@Table(name = "task_members",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"task_id"}))
 public class TaskMember {
 
     // Getters and Setters

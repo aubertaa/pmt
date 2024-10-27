@@ -98,14 +98,17 @@ class TaskControllerTest {
         List<Task> tasks = List.of(task1, task2);
 
         when(taskService.getTasks()).thenReturn(tasks);
+        when(taskService. getTaskMemberUser(2L)).thenReturn(8L);
 
         mockMvc.perform(get("/api/tasks"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].name").value("Task 1"))
                 .andExpect(jsonPath("$[0].projectId").value(1L))
+                .andExpect(jsonPath("$[0].assignedTo").value(0L))
                 .andExpect(jsonPath("$[1].name").value("Task 2"))
-                .andExpect(jsonPath("$[1].projectId").value(1L));
+                .andExpect(jsonPath("$[1].projectId").value(1L))
+                .andExpect(jsonPath("$[1].assignedTo").value(8L));
     }
 
     @Test

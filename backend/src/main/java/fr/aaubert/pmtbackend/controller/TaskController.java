@@ -55,6 +55,8 @@ public class TaskController {
                     taskMap.put("priority", task.getPriority());
                     taskMap.put("status", task.getStatus());
                     taskMap.put("projectId", task.getProject().getProjectId()); // Adding projectId
+                    taskMap.put("assignedTo", taskService.getTaskMemberUser(task.getId())); // Adding taskMemberUserId
+
                     return taskMap;
                 })
                 .collect(Collectors.toList());

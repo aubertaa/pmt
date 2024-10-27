@@ -1,0 +1,50 @@
+package fr.aaubert.pmtbackend.controller;
+
+
+import fr.aaubert.pmtbackend.model.ProjectRequest;
+import fr.aaubert.pmtbackend.model.Task;
+import fr.aaubert.pmtbackend.model.TaskMember;
+import fr.aaubert.pmtbackend.model.TaskRequest;
+import fr.aaubert.pmtbackend.service.TaskService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(
+        origins = {"http://localhost:4200", "http://localhost:4201"},
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
+public class TaskController {
+
+    @Autowired
+    private TaskService taskService;
+
+    // Endpoint pour créer une tâche dans un projet
+    @PostMapping("/task")
+    public ResponseEntity<Task> createTask(@RequestBody @Valid TaskRequest taskRequest) {
+        Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId());
+        return ResponseEntity.ok(task);
+    }
+
+    // Endpoint pour assigner une tâche à un membre
+    @PostMapping("/task/assign")
+    public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam("taskId") Long taskId, @RequestParam("userId") Long userId) {
+        TaskMember taskMember = taskService.assignTaskToUser(taskId, userId);
+        return ResponseEntity.ok(taskMember);
+    }
+
+
+    // Endpoint pour lister les tâches d'un projet spécifique
+    @GetMapping("/tasks")
+    public ResponseEntity<List<Task>> getTasksByProjectId(@RequestParam("projectId") Long projectId) {
+        List<Task> tasks = taskService.getTasksByProjectId(projectId);
+        return ResponseEntity.ok(tasks);
+    }
+}

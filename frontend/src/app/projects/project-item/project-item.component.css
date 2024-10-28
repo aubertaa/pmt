@@ -78,9 +78,46 @@
     z-index: 1000;
 }
 
-.popin-content {
-    text-align: center;
+.task-popin {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    z-index: 1000;
 }
+
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tasks-table {
+  width: 100%;
+  table-layout: auto;
+}
+
+.tasks-table th,
+.tasks-table td {
+  white-space: nowrap; /* Prevent wrapping in cells to avoid expanding */
+  padding: 0.5rem;
+}
+
+.tasks-table input,
+.tasks-table select {
+  width: 100%; /* Allow inputs to take full width of cell */
+}
+
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: middle;
+}
+
 .user-table {
     width: 100%;
     border-collapse: collapse;
@@ -115,6 +152,7 @@
 .popin-content {
   max-width: 600px;
   margin: auto;
+  text-align: center;
 }
 
 .members-table {

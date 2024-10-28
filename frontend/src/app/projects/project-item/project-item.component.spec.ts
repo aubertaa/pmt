@@ -21,11 +21,13 @@ describe('ProjectItemComponent', () => {
       changeRole: jest.fn(),
       addMember: jest.fn(),
       deleteProject: jest.fn(),
+      hasChanges: jest.fn(),
     } as unknown as jest.Mocked<ProjectService>;
 
     mockTaskService = {
       createTask: jest.fn(),
       assignTaskToUser: jest.fn(),
+      updateTask: jest.fn(),
       tasks$: of([]),
       getTasks: jest.fn(),
     } as unknown as jest.Mocked<TaskService>;
@@ -156,4 +158,55 @@ describe('ProjectItemComponent', () => {
     expect(component.isUserNotMember(project, user)).toBe(true);
     expect(component.isUserNotMember(project, { userId: 2 } as User)).toBe(false);
   });
+
+  it('onTaskChange should modify task.modified', () => {
+    const task = { modified: false } as Task;
+
+    component.onTaskChange(task);
+
+    expect(task.modified).toBe(true);
+  });
+
+  it('updateTask should update a task', () => {
+    const task = { id: 1 } as Task;
+    const project = { id: 2 } as Project;
+
+    component.updateTask(task, project);
+
+    expect(mockTaskService.updateTask).toHaveBeenCalledWith(task, 2);
+    expect(task.modified).toBe(false);
+  });
+
+  it('onShowTaskPopin  should show the task popin', () => {
+    component.onShowTaskPopin({} as Task);
+    expect(component.showTaskPopin).toBe(true);
+  });
+
+  it('closeTaskPopin should close the task popin', () => {
+    component.closeTaskPopin();
+    expect(component.showTaskPopin).toBe(false);
+  });
+
+  it('closeInvitePopin should close the invite popin', () => {
+    component.closeInvitePopin();
+    expect(component.showInvitePopin).toBe(false);
+  });
+
+  it('closeTasks should close the tasks', () => {
+    component.closeTasks();
+    expect(component.showTasks).toBe(false);
+  });
+
+  it('closeMembersPopin should close the members popin', () => {
+    component.closeMembersPopin();
+    expect(component.showMembersPopin).toBe(false);
+  } );  
+
+
+  
+
+    
+
+
+
 });

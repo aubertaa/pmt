@@ -48,8 +48,8 @@
     </div>
   </div>
   <div class="row justify-content-left">
-    <div class="col-9">
-      <table class="tasks-table" style="width: 100%; border-collapse: collapse;">
+    <div class="col-9 table-responsive">
+      <table class="tasks-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -59,21 +59,51 @@
             <th>Statut</th>
             <th>Echéance</th>
             <th>Assignée à</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <ng-container *ngFor="let task of tasks$ | async">
             <ng-container *ngIf="task.projectId === project?.id">
-              <tr (click)="openAssignPopin($event, task)">
+              <tr >
                 <td>{{ task?.id}}</td>
-                <td>{{ task?.name  }}</td>
-                <td>{{ task?.description }}</td>
-                <td>{{ task?.priority }}</td>
-                <td>{{ task?.status }}</td>
-                <td>{{ task?.dueDate | date: 'longDate' }}</td>
-                <td>{{ getUserName(task?.assignedTo) }}</td>
+                <td><input [(ngModel)]="task.name" (ngModelChange)="onTaskChange(task)"></td>
+                <td><input [(ngModel)]="task.description" (ngModelChange)="onTaskChange(task)"></td>
+                <td>
+                  <select [(ngModel)]="task.priority" (ngModelChange)="onTaskChange(task)">
+                    <option *ngFor="let priority of priorities" [value]="priority" [selected]="priority === task.priority">{{ priority }}</option>
+                  </select>
+                </td>
+                <td>
+                  <select [(ngModel)]="task.status" (ngModelChange)="onTaskChange(task)">
+                    <option *ngFor="let status of statuses" [value]="status" [selected]="status === task.status">{{ status }}</option>
+                  </select>
+                </td>
+                <td><input type="date" [(ngModel)]="task.dueDate" (ngModelChange)="onTaskChange(task)"></td>
+                <td (click)="openAssignPopin($event, task)">{{ getUserName(task?.assignedTo) }}</td>
+                <td>
+                <button class="btn btn-secondary m-1 btn-sm" (click)="onShowTaskPopin(task)">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-primary btn-sm" [disabled]="!hasChanges(task) && !task?.modified" (click)="updateTask(task, project)">
+                  <i class="fas fa-save"></i>
+                </button>
+              </td>
               </tr>
             </ng-container>
+
+            <!-- Popin for seeing task details -->
+            <div class="task-popin" *ngIf="showTaskPopin">
+              <div class="popin-content">
+                <h4>{{ task.name }}</h4>
+                <p>{{ task.description }}</p>
+                <p><strong>Priorité:</strong> {{ task.priority }}</p>
+                <p><strong>Statut:</strong> {{ task.status }}</p>
+                <p><strong>Echéance:</strong> {{ task.dueDate | date: 'longDate' }}</p>
+                <p><strong>Assignée à:</strong> {{ getUserName(task.assignedTo) }}</p>
+                <button class="btn btn-secondary close-button" (click)="closeTaskPopin()">Fermer</button>
+              </div>
+            </div>
                         
             <!-- Popin for assigning members -->
             <div class="invite-popin" *ngIf="showAssignPopin">

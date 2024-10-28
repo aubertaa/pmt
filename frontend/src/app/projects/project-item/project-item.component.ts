@@ -20,10 +20,12 @@ export class ProjectItemComponent implements OnInit {
   @Input() statuses: string[] = [];
 
   showInvitePopin: boolean = false;
+  showTaskPopin: boolean = false;
   showAssignPopin: boolean = false;
   showMembersPopin: boolean = false;
   showTasks: boolean = false;
   showAddTaskForm: boolean = false;
+  
   loggedInUserId = parseInt(localStorage.getItem('loggedInUserId') ?? "0");
 
   tasks$: Observable<Task[]>;
@@ -38,15 +40,36 @@ export class ProjectItemComponent implements OnInit {
 
   constructor(private projectService: ProjectService,
     private taskService: TaskService,
-    private authService: AuthService,
     private router: Router) {
     this.tasks$ = this.taskService.tasks$;
     console.log(this.router.url);
   }
 
+  onTaskChange (task: Task) {
+    task.modified = true;
+  }
+
+  updateTask(updatedTask: Task, project: Project) {
+    this.taskService.updateTask(updatedTask, project.id);
+    updatedTask.modified = false;
+  }
+
+  hasChanges (editedTask: Task) {
+    //find task by id in tasks$
+    const task = this.taskService.tasksSubject.value.find(task => task.id === editedTask.id);
+    return (editedTask.name !== task?.name ||
+      editedTask.description !== task?.description ||
+      editedTask.priority !== task?.priority ||
+      editedTask.status !== task?.status ||
+      editedTask.dueDate !== task?.dueDate);
+  }
 
   getUserName (user_id: number | undefined) {
     return this.users.find(user => user.userId === user_id)?.userName;
+  }
+
+  onShowTaskPopin (task: Task) {
+    this.showTaskPopin = true;
   }
 
   onAddTask (formTask: NgForm, projectId: number) {
@@ -119,14 +142,20 @@ export class ProjectItemComponent implements OnInit {
   onShowTasks () {
     this.showTasks = !this.showTasks;
   }
+
   onInviteUsers (event: Event, projectId: number) {
     event.stopPropagation();
     this.showInvitePopin = true;
   }
 
+  closeTaskPopin () {
+    this.showTaskPopin = false;
+  }
+
   closeInvitePopin () {
     this.showInvitePopin = false;
   }
+
 
   closeAssignPopin () {
     this.showAssignPopin = false;

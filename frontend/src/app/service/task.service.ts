@@ -13,6 +13,7 @@ export interface Task {
   dueDate: Date;
   projectId?: number;
   assignedTo?: number;
+  modified?: boolean;
 }
 
 export interface TaskMember {
@@ -41,6 +42,18 @@ export class TaskService {
   constructor(
     private toastService: ToastService,
     private apiService: ApiService) { }
+
+  updateTask (updatedTask: Task, project_id: number) {
+    this.apiService.updateTask(updatedTask, project_id).subscribe({
+      next: () => {
+        this.getTasks();
+        this.toastService.addToast('Task updated !');
+      },
+      error: () => {
+        this.toastService.addToast('Task not updated !');
+      },
+    });
+  }
 
   createTask (name: string, description: string, priority: string, status: string, dueDate: Date, projectId: number) {
     this.apiService.createTask(name, description, priority, status, dueDate, projectId).subscribe({

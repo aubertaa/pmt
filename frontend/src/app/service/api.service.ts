@@ -31,6 +31,7 @@ export interface CreatedResponse {
 })
 export class ApiService {
 
+
   private apiUrl = 'http://localhost:8081/api';
   constructor(private httpClient: HttpClient) { }
 
@@ -52,6 +53,25 @@ export class ApiService {
 
     return this.httpClient
       .post<unknown>(`${this.apiUrl}/project/addMember`, null, { params })
+      .pipe(catchError(this.catchError));
+  }
+  
+  updateTask (updatedTask: Task, project_id:  number) {
+    
+    const taskRequest: TaskRequest = {
+      task: {
+        id:updatedTask.id,
+        name: updatedTask.name,
+        description: updatedTask.description,
+        priority: updatedTask.priority,
+        dueDate: updatedTask.dueDate,
+        status: updatedTask.status
+      },
+      projectId: project_id,
+    };
+
+    return this.httpClient
+      .patch<unknown>(`${this.apiUrl}/task`, taskRequest)
       .pipe(catchError(this.catchError));
   }
 

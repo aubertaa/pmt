@@ -1,12 +1,8 @@
 package fr.aaubert.pmtbackend.service;
 
-import fr.aaubert.pmtbackend.model.ProjectMember;
 import fr.aaubert.pmtbackend.model.Task;
 import fr.aaubert.pmtbackend.model.TaskMember;
-import fr.aaubert.pmtbackend.model.User;
-import jakarta.validation.Valid;
 
-import java.util.Arrays;
 import java.util.List;
 
 public interface TaskService {
@@ -24,5 +20,5 @@ public interface TaskService {
 
     Long getTaskMemberUser(Long task_id);
 
-    Task updateTask( Task task);
+    Task updateTask(Task task, Long projectId);
 }

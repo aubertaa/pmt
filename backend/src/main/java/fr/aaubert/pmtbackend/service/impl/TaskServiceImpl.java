@@ -80,8 +80,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(Task task) {
-        return taskRepository.save(task);
+    public Task updateTask(Task task, Long projectId) {
+
+        Optional<Project> project = projectRepository.findById(projectId);
+        if (project.isPresent()) {
+            task.setProject(project.get());
+            return taskRepository.save(task);
+        }
+        throw new RuntimeException("Project not found");
+
     }
 
 }

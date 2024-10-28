@@ -35,8 +35,8 @@ public class TaskController {
 
     @PatchMapping("/task")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<Task> updateTask(@RequestBody @Valid Task task) {
-        Task updatedTask = taskService.updateTask(task);
+    public ResponseEntity<Task> updateTask(@RequestBody @Valid TaskRequest taskRequest) {
+        Task updatedTask = taskService.updateTask(taskRequest.getTask(), taskRequest.getProjectId());
         return ResponseEntity.ok(updatedTask);
     }
 

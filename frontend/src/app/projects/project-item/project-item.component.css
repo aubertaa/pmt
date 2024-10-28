@@ -1,15 +1,14 @@
-
 .invalid-feedback {
   display: block;
 }
 
 .project-item {
-    padding-bottom: 40px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    position: relative;
+  padding-bottom: 40px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  position: relative;
 }
 
 .project-line {
@@ -19,77 +18,64 @@
 }
 
 .project-name {
-    margin: 0;
-    font-size: 1.5em;
-    color: #333;
+  margin: 0;
+  font-size: 1.5em;
+  color: #333;
 }
 
 .project-description {
-    margin: 5px 0;
-    color: #666;
+  margin: 5px 0;
+  color: #666;
 }
 
 .project-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .project-start-date {
-    margin: 0;
-    color: #999;
-    font-size: 0.9em;
+  margin: 0;
+  color: #999;
+  font-size: 0.9em;
 }
 
 .project-start-date i {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .project-user-role {
-    background-color: #e0e0e0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin: 0;
-    font-size: 0.9em;
-    color: #333;
-    position: absolute;
-    top: 10px;
-    right: 10px;
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 0;
+  font-size: 0.9em;
+  color: #333;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .button-container {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    display: flex;
-    gap: 10px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .invite-popin {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 20px;
-    z-index: 1000;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  z-index: 1000;
 }
-
-.task-popin {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 20px;
-    z-index: 1000;
-}
-
 
 .table-responsive {
   width: 100%;
@@ -119,24 +105,24 @@
 }
 
 .user-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .user-table th,
 .user-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
 
 .user-table tr:hover {
-    background-color: #f1f1f1;
-    cursor: pointer;
+  background-color: #f1f1f1;
+  cursor: pointer;
 }
 .close-button {
-    margin-top: 20px;
-    /* Adjust the value as needed */
+  margin-top: 20px;
+  /* Adjust the value as needed */
 }
 .members-popin {
   position: fixed;
@@ -161,7 +147,8 @@
   margin-bottom: 20px;
 }
 
-.members-table th, .members-table td {
+.members-table th,
+.members-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -201,7 +188,8 @@
   border-collapse: collapse;
 }
 
-.tasks-table th, .tasks-table td {
+.tasks-table th,
+.tasks-table td {
   border: 1px solid #ddd; /* Add borders */
   padding: 8px; /* Add padding for spacing */
 }
@@ -219,4 +207,28 @@
   border: 1px solid #0056b3;
   padding: 10px;
   background-color: aliceblue;
+}
+
+.task-card-popin {
+  border-left: 5px solid;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 5px;
+  padding: 100px;
+  z-index: 1000;
+}
+
+.priority-high {
+  border-color: #dc3545; /* Red */
+}
+
+.priority-medium {
+  border-color: #ffc107; /* Yellow */
+}
+
+.priority-low {
+  border-color: #28a745; /* Green */
 }

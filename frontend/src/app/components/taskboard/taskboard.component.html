@@ -1,0 +1,33 @@
+<div class="container">
+  <h2 class="text-center my-4">Tableau des tâches</h2>
+  <div class="task-board d-flex gap-3">
+    
+    <!-- Columns for each status -->
+    <div class="task-column" *ngFor="let status of statuses">
+      <h5>{{ status }}</h5>
+      
+      <!-- Display tasks in this column based on status -->
+      <div *ngFor="let task of tasks" [ngClass]="{'d-none': task.status !== status}">
+        
+        <!-- Task Card -->
+        <div class="card task-card mb-3" [ngClass]="{
+            'priority-high': task.priority === 'HIGH',
+            'priority-medium': task.priority === 'MEDIUM',
+            'priority-low': task.priority === 'LOW'
+          }">
+          <div class="card-body">
+            <h5 class="card-title">{{ task.name }}</h5>
+            <p class="card-text">{{ task.description }}</p>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><strong>Priority:</strong> {{ task.priority }}</li>
+              <li class="list-group-item"><strong>Due Date:</strong> {{ task.dueDate | date:'shortDate' }}</li>
+              <li class="list-group-item"><strong>Assigned To:</strong> {{ task.assignedTo || 'Unassigned' }}</li>
+              <li class="list-group-item"><strong>Project ID:</strong> {{ task.projectId || 'N/A' }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

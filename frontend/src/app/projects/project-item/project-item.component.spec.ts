@@ -28,7 +28,6 @@ describe('ProjectItemComponent', () => {
       createTask: jest.fn(),
       assignTaskToUser: jest.fn(),
       updateTask: jest.fn(),
-      tasks$: of([]),
       getTasks: jest.fn(),
     } as unknown as jest.Mocked<TaskService>;
 
@@ -54,10 +53,6 @@ describe('ProjectItemComponent', () => {
     fixture = TestBed.createComponent(ProjectItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should initialize with task observable', () => {
-    expect(component.tasks$).toBe(mockTaskService.tasks$);
   });
 
   it('should get the correct username for a given user ID', () => {

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(
         origins = {"http://localhost:4200", "http://localhost:4201"},
         allowedHeaders = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class TaskController {
 
     @Autowired
@@ -31,6 +31,13 @@ public class TaskController {
     public ResponseEntity<Task> createTask(@RequestBody @Valid TaskRequest taskRequest) {
         Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId());
         return ResponseEntity.ok(task);
+    }
+
+    @PatchMapping("/task")
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<Task> updateTask(@RequestBody @Valid Task task) {
+        Task updatedTask = taskService.updateTask(task);
+        return ResponseEntity.ok(updatedTask);
     }
 
     // Endpoint pour assigner une tâche à un membre

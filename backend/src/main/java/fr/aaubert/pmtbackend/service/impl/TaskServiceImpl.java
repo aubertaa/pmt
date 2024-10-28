@@ -79,4 +79,9 @@ public class TaskServiceImpl implements TaskService {
         return taskMemberRepository.getMemberUserIdByTaskId(task_id);
     }
 
+    @Override
+    public Task updateTask(Task task) {
+        return taskRepository.save(task);
+    }
+
 }

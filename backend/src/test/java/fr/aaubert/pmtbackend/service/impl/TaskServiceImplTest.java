@@ -219,4 +219,22 @@ class TaskServiceImplTest {
         verify(taskRepository, times(1)).findByProjectId(projectId);
     }
 
+    @Test
+    void updateTask_shouldReturnUpdatedTask_whenTaskExists() {
+        // Arrange
+        Task task = new Task();
+        task.setId(1L);
+        task.setName("Task 1");
+
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
+
+        // Act
+        Task updatedTask = taskServiceImpl.updateTask(task);
+
+        // Assert
+        assertNotNull(updatedTask);
+        assertEquals("Task 1", updatedTask.getName());
+        verify(taskRepository, times(1)).save(any(Task.class));
+    }
+
 }

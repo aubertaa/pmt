@@ -64,14 +64,14 @@
         <tbody>
           <ng-container *ngFor="let task of tasks$ | async">
             <ng-container *ngIf="task.projectId === project?.id">
-              <tr (click)="openAssignPopin($event, task)">
+              <tr >
                 <td>{{ task?.id}}</td>
                 <td>{{ task?.name  }}</td>
                 <td>{{ task?.description }}</td>
                 <td>{{ task?.priority }}</td>
                 <td>{{ task?.status }}</td>
                 <td>{{ task?.dueDate | date: 'longDate' }}</td>
-                <td>{{ getUserName(task?.assignedTo) }}</td>
+                <td (click)="openAssignPopin($event, task)">{{ getUserName(task?.assignedTo) }}</td>
               </tr>
             </ng-container>
                         

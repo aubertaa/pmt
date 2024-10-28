@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
-import { AuthService, User } from '../../service/auth.service';
-import { Observable, map } from 'rxjs';
+import { User } from '../../service/auth.service';
 import { Task, TaskService } from '../../service/task.service';
 import { NgForm } from '@angular/forms';
 
@@ -18,6 +17,7 @@ export class ProjectItemComponent implements OnInit {
   @Input() users: User[] = [];
   @Input() priorities: string[] = [];
   @Input() statuses: string[] = [];
+  @Input() tasks: Task[] = [];
 
   showInvitePopin: boolean = false;
   showTaskPopin: boolean = false;
@@ -28,20 +28,18 @@ export class ProjectItemComponent implements OnInit {
   
   loggedInUserId = parseInt(localStorage.getItem('loggedInUserId') ?? "0");
 
-  tasks$: Observable<Task[]>;
-
   taskName: string = '';
   taskDescription: string = '';
   taskPriority: string = 'MEDIUM';
   taskStatus: string = '';
   taskDueDate: Date = new Date();
   toAssignTask?: Task;
+  taskPopinId: number = 0;
 
 
   constructor(private projectService: ProjectService,
     private taskService: TaskService,
     private router: Router) {
-    this.tasks$ = this.taskService.tasks$;
     console.log(this.router.url);
   }
 
@@ -70,6 +68,7 @@ export class ProjectItemComponent implements OnInit {
 
   onShowTaskPopin (task: Task) {
     this.showTaskPopin = true;
+    this.taskPopinId = task.id;
   }
 
   onAddTask (formTask: NgForm, projectId: number) {
@@ -150,6 +149,8 @@ export class ProjectItemComponent implements OnInit {
 
   closeTaskPopin () {
     this.showTaskPopin = false;
+    
+  this.taskPopinId = 0;
   }
 
   closeInvitePopin () {

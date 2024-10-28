@@ -3,7 +3,7 @@ import { AuthService, User } from '../../service/auth.service';
 import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
-import { TaskService } from '../../service/task.service';
+import { Task, TaskService } from '../../service/task.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -11,8 +11,9 @@ import { Observable } from 'rxjs';
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
-  isLoggedIn: boolean = this.authService.isAuthenticated();
 
+  isLoggedIn: boolean = this.authService.isAuthenticated();
+  showTaskboard: boolean = false;
   projects: Project[] = [];
 
   currentProjectName: string = '';
@@ -23,6 +24,7 @@ export class HomeComponent implements OnInit {
   statuses$: Observable<string[]>;
   roles$: Observable<string[]>;
   users$: Observable<User[]>;
+  tasks$: Observable<Task[]>;
 
   constructor(
     private authService: AuthService,
@@ -36,6 +38,16 @@ export class HomeComponent implements OnInit {
     this.users$ = this.authService.users$;
     this.priorities$ = this.taskService.priorities$;
     this.statuses$ = this.taskService.statuses$;
+    this.tasks$ = this.taskService.tasks$;
+  }
+
+  toggleTaskboard () {
+    this.showTaskboard = !this.showTaskboard;
+    if (this.showTaskboard) {
+      this.showTaskboard = true;
+    } else {
+      this.showTaskboard = false;
+    }
   }
 
   onAddProject (form: NgForm) {

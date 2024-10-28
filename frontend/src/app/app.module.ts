@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserInputFormComponent } from './components/user-input-form/user-input-form.component';
 import { provideHttpClient } from '@angular/common/http';
 import { ProjectItemComponent } from './projects/project-item/project-item.component';
+import { TaskboardComponent } from './components/taskboard/taskboard.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ProjectItemComponent } from './projects/project-item/project-item.compo
     RegisterComponent,
     UserInputFormComponent,
     ProjectItemComponent,
+    TaskboardComponent,
   ],
   imports: [
     BrowserModule,

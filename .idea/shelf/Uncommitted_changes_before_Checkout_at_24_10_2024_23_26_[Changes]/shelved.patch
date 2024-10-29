@@ -1,0 +1,29 @@
+Index: backend/src/main/java/fr/aaubert/pmtbackend/model/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package fr.aaubert.pmtbackend.model;\r\nimport com.fasterxml.jackson.annotation.JsonIgnore;\r\nimport jakarta.persistence.*;\r\nimport jakarta.validation.constraints.NotNull;\r\nimport lombok.Getter;\r\nimport lombok.Setter;\r\n\r\n@Setter\r\n@Getter\r\n@Entity\r\n@Table(name = \"user_entity\", uniqueConstraints = @UniqueConstraint(columnNames = \"email\"))\r\npublic class User {\r\n\r\n\t@Id\r\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\r\n    @JsonIgnore\r\n    private Long userId;\r\n\r\n    @NotNull(message = \"Username is mandatory\")\r\n    private String userName;\r\n    \r\n    @NotNull(message = \"Email is mandatory\")\r\n    private String email;\r\n    \r\n    private String password;\r\n\r\n    @Override\r\n\tpublic String toString() {\r\n\t\treturn \"User [userId=\" + userId + \", userName=\" + userName + \", email=\" + email + \", password=\" + password\r\n\t\t\t\t+ \"]\";\r\n\t}\r\n\r\n}\r\n
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/model/User.java b/backend/src/main/java/fr/aaubert/pmtbackend/model/User.java
+--- a/backend/src/main/java/fr/aaubert/pmtbackend/model/User.java	(revision cf05c2f19254f2337ed4b37aefd8b857d9cc3aa4)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/model/User.java	(date 1729804185267)
+@@ -5,6 +5,8 @@
+ import lombok.Getter;
+ import lombok.Setter;
+ 
++import java.util.Set;
++
+ @Setter
+ @Getter
+ @Entity
+@@ -24,6 +26,11 @@
+     
+     private String password;
+ 
++    // Define the relationship with ProjectMember
++    @OneToMany(mappedBy = "id.userId", cascade = CascadeType.ALL)
++    @JsonIgnore
++    private Set<ProjectMember> projectMembers;
++
+     @Override
+ 	public String toString() {
+ 		return "User [userId=" + userId + ", userName=" + userName + ", email=" + email + ", password=" + password

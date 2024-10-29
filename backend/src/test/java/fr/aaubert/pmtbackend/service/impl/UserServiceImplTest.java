@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.List;
 
 @SpringBootTest
 public class UserServiceImplTest {
@@ -68,6 +69,42 @@ public class UserServiceImplTest {
         assertEquals(user, foundUser);
 
     }
+
+    @Test
+    void testUpdateUser() {
+        //Updating an existing user
+        User user = new User();
+        user.setUserName("john.doe");
+        user.setEmail("mail@mail");
+        user.setPassword("password");
+        user.setUserId(456L);
+
+        when(userRepository.save(user)).thenReturn(user);
+
+        Long updatedUser = userService.updateUser(user);
+        assertEquals(456L, updatedUser);
+
+    }
+
+    @Test
+    void testGetAllUsers() {
+        // Test case 1: Saving a new user
+        User user = new User();
+        user.setUserName("john.doe");
+        user.setEmail("mail@mail");
+        user.setPassword("password");
+        user.setUserId(456L);
+
+        when(userRepository.findAll()).thenReturn(List.of(user));
+
+        List<User> users = userService.getAllUsers();
+
+        assertEquals(1, users.size());
+        assertEquals(user, users.get(0));
+
+    }
+
+
 
 
 

@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.Date;
@@ -21,7 +22,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +36,7 @@ class TaskControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
 
     @Test
     void createTask_shouldReturnTask_whenValidRequest() throws Exception {
@@ -97,7 +98,7 @@ class TaskControllerTest {
         List<Task> tasks = List.of(task1, task2);
 
         when(taskService.getTasks()).thenReturn(tasks);
-        when(taskService. getTaskMemberUser(2L)).thenReturn(8L);
+        when(taskService.getTaskMemberUser(2L)).thenReturn(8L);
 
         mockMvc.perform(get("/api/tasks"))
                 .andExpect(status().isOk())
@@ -147,6 +148,5 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("New Task"));
     }
-
 
 }

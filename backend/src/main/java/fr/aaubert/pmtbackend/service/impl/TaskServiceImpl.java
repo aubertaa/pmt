@@ -4,11 +4,13 @@ import fr.aaubert.pmtbackend.model.*;
 import fr.aaubert.pmtbackend.repository.ProjectRepository;
 import fr.aaubert.pmtbackend.repository.TaskMemberRepository;
 import fr.aaubert.pmtbackend.repository.TaskRepository;
+import fr.aaubert.pmtbackend.repository.TasksHistoryRepository;
 import fr.aaubert.pmtbackend.repository.UserRepository;
 import fr.aaubert.pmtbackend.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +19,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private TasksHistoryRepository tasksHistoryRepository;
 
     @Autowired
     private TaskMemberRepository taskMemberRepository;
@@ -33,7 +38,13 @@ public class TaskServiceImpl implements TaskService {
         Optional<Project> project = projectRepository.findById(projectId);
         if (project.isPresent()) {
             task.setProject(project.get());
-            return taskRepository.save(task);
+            Task savedTask = taskRepository.save(task);
+
+            //record history
+            Long userId = getTaskMemberUser(savedTask.getId());
+            recordTaskModification(savedTask, "CREATE", null, null, userId); // replace `1` with actual user ID
+
+            return savedTask;
         }
         throw new RuntimeException("Project not found");
     }
@@ -56,6 +67,11 @@ public class TaskServiceImpl implements TaskService {
                 taskMember.setTask(task.get());
                 taskMember.setUser(user.get());
             }
+            TaskMember savedMember = taskMemberRepository.save(taskMember);
+
+                //record history
+                recordTaskModification(task.get(), "ASSIGN", null, "Assigned to user " + userId, userId);
+
             return taskMemberRepository.save(taskMember);
 
         }
@@ -85,10 +101,40 @@ public class TaskServiceImpl implements TaskService {
         Optional<Project> project = projectRepository.findById(projectId);
         if (project.isPresent()) {
             task.setProject(project.get());
-            return taskRepository.save(task);
+
+            Task existingTask = taskRepository.findById(task.getId()).orElseThrow();
+
+            // Capture old and new values for changes
+            String oldValue = existingTask.toString();
+            String newValue = task.toString();
+
+            Task updatedTask = taskRepository.save(task);
+
+            //record history
+            Long userId = getTaskMemberUser(updatedTask.getId());
+            recordTaskModification(updatedTask, "UPDATE", oldValue, newValue, userId);
+
+            return updatedTask;
         }
         throw new RuntimeException("Project not found");
 
+    }
+
+    @Override
+    public void recordTaskModification(Task task, String modificationType, String oldValue, String newValue, Long modifiedBy) {
+        TasksHistory history = new TasksHistory();
+        history.setTask(task);
+        history.setModificationType(modificationType);
+        history.setOldValue(oldValue);
+        history.setNewValue(newValue);
+        history.setModifiedBy(modifiedBy);
+        history.setDateModified(new Date());
+        tasksHistoryRepository.save(history);
+    }
+
+    @Override
+    public List<TasksHistory> getTasksHistory() {
+        return tasksHistoryRepository.findAll();
     }
 
 }

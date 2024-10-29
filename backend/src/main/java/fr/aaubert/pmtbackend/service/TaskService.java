@@ -2,6 +2,7 @@ package fr.aaubert.pmtbackend.service;
 
 import fr.aaubert.pmtbackend.model.Task;
 import fr.aaubert.pmtbackend.model.TaskMember;
+import fr.aaubert.pmtbackend.model.TasksHistory;
 
 import java.util.List;
 
@@ -21,4 +22,8 @@ public interface TaskService {
     Long getTaskMemberUser(Long task_id);
 
     Task updateTask(Task task, Long projectId);
+
+    void recordTaskModification(Task task, String modificationType, String oldValue, String newValue, Long modifiedBy);
+
+    List<TasksHistory> getTasksHistory();
 }

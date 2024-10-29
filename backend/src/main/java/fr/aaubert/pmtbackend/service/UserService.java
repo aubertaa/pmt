@@ -1,6 +1,7 @@
 package fr.aaubert.pmtbackend.service;
 
 import fr.aaubert.pmtbackend.model.User;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface UserService {
     User getUserByUserName(String userName);
 
     List<User> getAllUsers();
+
+    Long updateUser(@Valid User user);
 
     //User getUserById(Long userId);
 }

@@ -26,6 +26,8 @@ public class User {
     
     private String password;
 
+    private Boolean notifications = false;
+
     // Define the relationship with ProjectMember
     @OneToMany(mappedBy = "id.userId", cascade = CascadeType.ALL)
     @JsonIgnore

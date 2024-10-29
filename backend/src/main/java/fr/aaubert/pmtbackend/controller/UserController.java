@@ -41,6 +41,7 @@ public class UserController {
         response.put("userName", user.getUserName());
         response.put("email", user.getEmail());
         response.put("password", user.getPassword());
+        response.put("notifications", user.getNotifications());
 
         return ResponseEntity.ok(response);
     }
@@ -56,10 +57,19 @@ public class UserController {
             userMap.put("userId", user.getUserId());
             userMap.put("userName", user.getUserName());
             userMap.put("email", user.getEmail());
+            userMap.put("notifications", user.getNotifications());
             return userMap;
         }).toList();
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/user")
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<Long> updateUser(@RequestBody @Valid User user) {
+        Long updatedUserId = userService.updateUser(user);
+        return ResponseEntity.ok(updatedUserId);
+    }
+
 
 
 }

@@ -83,4 +83,9 @@ public class TaskController {
         return List.of(TaskStatus.values());
     }
 
+    @GetMapping("/tasks/history")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<TasksHistory> getTasksHistory() {
+        return taskService.getTasksHistory();
+    }
 }

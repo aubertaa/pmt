@@ -79,6 +79,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userName").value("johndoe"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("myEmail2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.notifications").value(false))
                 .andDo(print());
     }
 
@@ -113,6 +114,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].userName").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].password").doesNotExist())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].notifications").value(false))
                 .andDo(print());
     }
 

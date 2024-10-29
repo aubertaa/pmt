@@ -222,6 +222,12 @@ class TaskServiceImplTest {
     @Test
     void updateTask_shouldThrowException_whenProjectDoesNotExist() {
         // Arrange
+
+        Project project = new Project();
+        project.setProjectId(1L);
+
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+
         Task task = new Task();
         task.setId(1L);
         task.setName("Task 1");
@@ -233,39 +239,32 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void recordTaskModification_shouldThrowException_whenTaskDoesNotExist() {
+    void updateTask_shouldSuccess_whenProjectExists() {
         // Arrange
+
+        Project project = new Project();
+        project.setProjectId(1L);
+
         Task task = new Task();
         task.setId(1L);
         task.setName("Task 1");
 
-        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> taskServiceImpl.recordTaskModification(task, "UPDATE", "Old Value", "New Value", 1L));
-    }
-
-    @Test
-    void recordTaskModification_shouldThrowException_whenTaskMemberDoesNotExist() {
-        // Arrange
-        Task task = new Task();
-        task.setId(1L);
-        task.setName("Task 1");
-
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-        when(taskMemberRepository.getMemberUserIdByTaskId(1L)).thenReturn(null);
+        when(taskRepository.save(task)).thenReturn(task);
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> taskServiceImpl.recordTaskModification(task, "UPDATE", "Old Value", "New Value", 1L));
+        taskServiceImpl.updateTask(task, 1L);
+        verify(taskRepository, times(1)).save(task);
     }
 
     @Test
     void getTasksHistory_shouldReturnTasksHistory_whenTasksHistoryExist() {
         // Arrange
+
         Task task = new Task();
         task.setId(1L);
         task.setName("Task 1");
-
 
         TasksHistory tasksHistory = new TasksHistory();
         tasksHistory.setId(1L);

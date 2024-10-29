@@ -8,6 +8,7 @@ export interface User {
   userName: string;
   email: string;
   userId: number;
+  notifications:boolean;
 }
 
 @Injectable({
@@ -95,6 +96,19 @@ export class AuthService {
     return localStorage.getItem('isLoggedIn') == 'true';
   }
 
+  updateUserNotificationSetting (user: User, notificationsActive: boolean) {
+    this.apiService.updateUserNotificationSetting(user, notificationsActive).subscribe({
+      next: (res) => {
+        console.log('res: ' + res);
+          this.toastService.addToast('Notification set to ' + notificationsActive ? 'active' : 'inactive' + ' !');
+          this.apiService.getUsers();
+      },
+      error: (error) => {
+        this.toastService.addToast('Notification status update failed!');
+      },
+    });
+  }
+  
   getUsers() {
     this.apiService.getUsers().subscribe({
       next: (res) => {

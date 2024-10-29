@@ -24,6 +24,17 @@ export interface TaskMember {
 export interface TaskRequest {
   task: Task;
   projectId: number;
+  userId: number;
+}
+
+export interface TaskHistoryItem {
+  id: number,
+  task: Task,
+  modifiedBy: number,
+  modificationType: string,
+  oldValue: string,
+  newValue: string,
+  dateModified: Date
 }
 
 @Injectable({
@@ -34,6 +45,8 @@ export class TaskService {
 
   tasksSubject = new BehaviorSubject<Task[]>([]);
   tasks$ = this.tasksSubject.asObservable();
+  taskHistoryItemsSubject = new BehaviorSubject<TaskHistoryItem[]>([]);
+  taskHistoryItems$ = this.taskHistoryItemsSubject.asObservable();
   prioritiesSubject = new BehaviorSubject<string[]>([]);
   priorities$ = this.prioritiesSubject.asObservable();
   statusesSubject = new BehaviorSubject<string[]>([]);
@@ -43,8 +56,8 @@ export class TaskService {
     private toastService: ToastService,
     private apiService: ApiService) { }
 
-  updateTask (updatedTask: Task, project_id: number) {
-    this.apiService.updateTask(updatedTask, project_id).subscribe({
+  updateTask (updatedTask: Task, project_id: number, user_id:number) {
+    this.apiService.updateTask(updatedTask, project_id, user_id).subscribe({
       next: () => {
         this.getTasks();
         this.toastService.addToast('Task updated !');
@@ -55,8 +68,8 @@ export class TaskService {
     });
   }
 
-  createTask (name: string, description: string, priority: string, status: string, dueDate: Date, projectId: number) {
-    this.apiService.createTask(name, description, priority, status, dueDate, projectId).subscribe({
+  createTask (name: string, description: string, priority: string, status: string, dueDate: Date, projectId: number, user_id:number) {
+    this.apiService.createTask(name, description, priority, status, dueDate, projectId, user_id).subscribe({
       next: (res) => {
         console.log('res createTask: ' + res);
 
@@ -75,8 +88,8 @@ export class TaskService {
     });
   }
 
-  assignTaskToUser (userId: number, taskId: number) {
-    this.apiService.assignTaskToUser(userId, taskId).subscribe({
+  assignTaskToUser (userId: number, taskId: number, authorId: number) {
+    this.apiService.assignTaskToUser(userId, taskId, authorId).subscribe({
       next: () => {
         this.getTasks();
         this.toastService.addToast('Task added to project !');
@@ -104,6 +117,24 @@ export class TaskService {
       },
     });
   }
+
+  getTaskHistoryItems () {
+    this.apiService.getTaskHistoryItems().subscribe({
+      next: (res) => {
+        console.log('res getTaskHistoryItems: ' + res);
+        try {
+          this.taskHistoryItemsSubject.next(res);
+          this.toastService.addToast('Tasks History fetched !');
+        } catch (error) {
+          this.toastService.addToast('Tasks History not fetched !');
+        }
+      },
+      error: (error) => {
+        this.toastService.addToast('Tasks History not fetched !');
+      },
+    });
+  }
+
 
 
   getPriorities () {

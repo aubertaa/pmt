@@ -3,7 +3,7 @@ import { AuthService, User } from '../../service/auth.service';
 import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
-import { Task, TaskService } from '../../service/task.service';
+import { Task, TaskHistoryItem, TaskService } from '../../service/task.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -12,8 +12,11 @@ import { Observable } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
 
+  notificationsActive: boolean = false;
+
   isLoggedIn: boolean = this.authService.isAuthenticated();
   showTaskboard: boolean = false;
+  showHistory: boolean = false;
   projects: Project[] = [];
 
   currentProjectName: string = '';
@@ -25,6 +28,7 @@ export class HomeComponent implements OnInit {
   roles$: Observable<string[]>;
   users$: Observable<User[]>;
   tasks$: Observable<Task[]>;
+  taskHistoryItems$: Observable<TaskHistoryItem[]>;
 
   constructor(
     private authService: AuthService,
@@ -39,6 +43,7 @@ export class HomeComponent implements OnInit {
     this.priorities$ = this.taskService.priorities$;
     this.statuses$ = this.taskService.statuses$;
     this.tasks$ = this.taskService.tasks$;
+    this.taskHistoryItems$ = this.taskService.taskHistoryItems$;
   }
 
   toggleTaskboard () {
@@ -47,6 +52,26 @@ export class HomeComponent implements OnInit {
       this.showTaskboard = true;
     } else {
       this.showTaskboard = false;
+    }
+  }
+
+  onShowHistory() {
+    this.taskService.getTaskHistoryItems();
+    this.showHistory = !this.showHistory;
+  }
+
+  toggleNotifications () {
+    this.notificationsActive = !this.notificationsActive;
+    this.updateUserNotificationSetting(this.notificationsActive);
+  }
+
+  updateUserNotificationSetting (notificationsActive: boolean) {
+    const loggedInUserId = localStorage.getItem('loggedInUserId');
+    if (loggedInUserId) {
+      const currentUser = this.authService.usersSubject.value.find(user => user.userId === parseInt(loggedInUserId));
+      if (currentUser) {
+        this.authService.updateUserNotificationSetting(currentUser, notificationsActive);
+      }
     }
   }
 
@@ -70,12 +95,14 @@ export class HomeComponent implements OnInit {
     form.reset();
   }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
     this.isLoggedIn = this.authService.isAuthenticated();
     this.projectService.getRoles();
     this.taskService.getPriorities();
     this.taskService.getStatuses();
+    this.taskService.getTasks();
     this.authService.getUsers();
+    this.taskService.getTaskHistoryItems();
     if (this.isLoggedIn) {
       const loggedInUserId = localStorage.getItem('loggedInUserId');
       if (loggedInUserId) {
@@ -87,7 +114,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  logout() {
+  logout () {
     this.authService.logout();
     this.router.navigate(['/login']);
   }

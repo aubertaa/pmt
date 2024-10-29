@@ -1,0 +1,53 @@
+<div class="container my-4">
+    <h2>Historique de modification des tâches</h2>
+    <div *ngIf="taskHistoryItems && taskHistoryItems.length > 0">
+        <div class="card mb-3" *ngFor="let historyItem of taskHistoryItems">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">
+                    Tâche: {{ historyItem.task.name }}
+                </span>
+                <span class="text-muted small">
+                    Modifiée par: {{ historyItem.dateModified | date:'short' }}
+                </span>
+            </div>
+            <div class="card-body">
+                <!-- Task details -->
+                <h5 class="card-title">{{ historyItem.task.description }}</h5>
+                <p class="card-text">
+                    <strong>Priorité:</strong> {{ historyItem.task.priority }} <br>
+                    <strong>Statut:</strong> {{ historyItem.task.status }} <br>
+                    <strong>Echéance:</strong> {{ historyItem.task.dueDate | date:'mediumDate' }}
+                </p>
+
+                <!-- Modification details -->
+                <div class="list-group">
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="me-auto">
+                            <div>
+                                <strong>Modifiée par:</strong> 
+                                {{ getUserName(historyItem.modifiedBy) || 'Unknown User' }}
+                            </div>
+                            <div>
+                                <strong>Type de modification:</strong> {{ historyItem.modificationType }}
+                            </div>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">
+                            ID de la tâche: {{ historyItem.task.id }}
+                        </span>
+                    </div>
+
+                    <!-- Old and New Values -->
+                    <div class="list-group-item">
+                        <strong>Ancienne valeur:</strong> {{ historyItem.oldValue }}
+                    </div>
+                    <div class="list-group-item">
+                        <strong>Nouvelle valeur:</strong> {{ historyItem.newValue }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="alert alert-info" *ngIf="!taskHistoryItems || taskHistoryItems.length === 0">
+        Aucun historique disponible.
+    </div>
+</div>

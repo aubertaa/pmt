@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Project } from './project.service';
 import { User } from './auth.service';
-import { Task, TaskRequest } from './task.service';
+import { Task, TaskHistoryItem, TaskRequest } from './task.service';
 
 export interface LoginResponse {
   userId: string;
@@ -35,7 +35,7 @@ export class ApiService {
   private apiUrl = 'http://localhost:8081/api';
   constructor(private httpClient: HttpClient) { }
 
-  changeRole(userId: number, projectId: number, newRole: string) {
+  changeRole (userId: number, projectId: number, newRole: string) {
 
     const params = new HttpParams()
       .set('projectId', projectId)
@@ -55,12 +55,12 @@ export class ApiService {
       .post<unknown>(`${this.apiUrl}/project/addMember`, null, { params })
       .pipe(catchError(this.catchError));
   }
-  
-  updateTask (updatedTask: Task, project_id:  number) {
-    
+
+  updateTask (updatedTask: Task, project_id: number, user_id: number) {
+
     const taskRequest: TaskRequest = {
       task: {
-        id:updatedTask.id,
+        id: updatedTask.id,
         name: updatedTask.name,
         description: updatedTask.description,
         priority: updatedTask.priority,
@@ -68,6 +68,7 @@ export class ApiService {
         status: updatedTask.status
       },
       projectId: project_id,
+      userId: user_id
     };
 
     return this.httpClient
@@ -156,12 +157,19 @@ export class ApiService {
       .pipe(catchError(this.catchError));
   }
 
-  
-  createTask (name: string, description: string, priority: string, status: string, dueDate: Date, projectId: number) {
+  updateUserNotificationSetting (user: User, notificationsActive: boolean) {
+    user.notifications = notificationsActive
+
+    return this.httpClient
+      .post<unknown>(`${this.apiUrl}/user`, user)
+      .pipe(catchError(this.catchError));
+  }
+
+  createTask (name: string, description: string, priority: string, status: string, dueDate: Date, projectId: number, user_id:number) {
 
     const taskRequest: TaskRequest = {
       task: {
-        id:0,
+        id: 0,
         name: name,
         description: description,
         priority: priority,
@@ -169,18 +177,20 @@ export class ApiService {
         status: status
       },
       projectId: projectId,
+      userId: user_id
     };
 
     return this.httpClient
       .post<CreatedResponse>(`${this.apiUrl}/task`, taskRequest)
       .pipe(catchError(this.catchError));
 
-    }
+  }
 
-  assignTaskToUser (userId: number, taskId: number) {
+  assignTaskToUser (userId: number, taskId: number, authorId:number) {
     const params = new HttpParams()
       .set('taskId', taskId)
       .set('userId', userId);
+      .set('authorId', authorId);
 
     return this.httpClient
       .post<unknown>(`${this.apiUrl}/task/assign`, null, { params })
@@ -190,6 +200,12 @@ export class ApiService {
   getTasks () {
     return this.httpClient
       .get<Task[]>(`${this.apiUrl}/tasks`)
+      .pipe(catchError(this.catchError));
+  }
+
+  getTaskHistoryItems () {
+    return this.httpClient
+      .get<TaskHistoryItem[]>(`${this.apiUrl}/tasks/history`)
       .pipe(catchError(this.catchError));
   }
 

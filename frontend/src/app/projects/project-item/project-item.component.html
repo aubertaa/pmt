@@ -20,25 +20,13 @@
           <span *ngIf="!showTasks">+ Voir les tâches</span>
           <span *ngIf="showTasks">- Masquer les tâches</span>
         </button>
-        <button
-          class="btn btn-info btn-sm"
-          *ngIf="project.userRole === 'OWNER'"
-          (click)="onSeeMembers()"
-        >
+        <button class="btn btn-info btn-sm" *ngIf="project.userRole === 'OWNER'" (click)="onSeeMembers()">
           Voir les membres
         </button>
-        <button
-          class="btn btn-secondary btn-sm"
-          *ngIf="project.userRole === 'OWNER'"
-          (click)="onInviteUsers($event, project.id)"
-        >
+        <button class="btn btn-secondary btn-sm" *ngIf="project.userRole === 'OWNER'" (click)="onInviteUsers($event, project.id)">
           Inviter
         </button>
-        <button
-          class="btn btn-danger btn-sm"
-          *ngIf="project.userRole === 'OWNER'"
-          (click)="onDeleteProject(project.id)"
-        >
+        <button class="btn btn-danger btn-sm" *ngIf="project.userRole === 'OWNER'" (click)="onDeleteProject(project.id)">
           Supprimer
         </button>
       </div>
@@ -54,10 +42,7 @@
       <div *ngIf="tasks">
         <div class="row mb-3 justify-content-left">
           <div class="col-9">
-            <button
-              class="btn btn-primary btn-add-task"
-              (click)="onShowAddTaskForm()"
-            >
+            <button class="btn btn-primary btn-add-task" (click)="onShowAddTaskForm()">
               Ajouter une tâche
             </button>
           </div>
@@ -84,67 +69,36 @@
                   <tr>
                     <td>{{ task?.id }}</td>
                     <td>
-                      <input
-                        [(ngModel)]="task.name"
-                        (ngModelChange)="onTaskChange(task)"
-                      />
+                      <input [(ngModel)]="task.name" (ngModelChange)="onTaskChange(task)">
                     </td>
                     <td>
-                      <input
-                        [(ngModel)]="task.description"
-                        (ngModelChange)="onTaskChange(task)"
-                      />
+                      <input [(ngModel)]="task.description" (ngModelChange)="onTaskChange(task)">
                     </td>
                     <td>
-                      <select
-                        [(ngModel)]="task.priority"
-                        (ngModelChange)="onTaskChange(task)"
-                      >
-                        <option
-                          *ngFor="let priority of priorities"
-                          [value]="priority"
-                          [selected]="priority === task.priority"
-                        >
+                      <select [(ngModel)]="task.priority" (ngModelChange)="onTaskChange(task)">
+                        <option *ngFor="let priority of priorities" [value]="priority" [selected]="priority === task.priority">
                           {{ priority }}
                         </option>
                       </select>
                     </td>
                     <td>
-                      <select
-                        [(ngModel)]="task.status"
-                        (ngModelChange)="onTaskChange(task)"
-                      >
-                        <option
-                          *ngFor="let status of statuses"
-                          [value]="status"
-                          [selected]="status === task.status"
-                        >
+                      <select [(ngModel)]="task.status" (ngModelChange)="onTaskChange(task)">
+                        <option *ngFor="let status of statuses" [value]="status" [selected]="status === task.status">
                           {{ status }}
                         </option>
                       </select>
                     </td>
                     <td>
-                      <input
-                        type="date"
-                        [(ngModel)]="task.dueDate"
-                        (ngModelChange)="onTaskChange(task)"
-                      />
+                      <input type="date" [(ngModel)]="task.dueDate" (ngModelChange)="onTaskChange(task)">
                     </td>
                     <td (click)="openAssignPopin($event, task)">
                       {{ getUserName(task?.assignedTo) }}
                     </td>
                     <td>
-                      <button
-                        class="btn btn-secondary m-1 btn-sm"
-                        (click)="onShowTaskPopin(task)"
-                      >
+                      <button class="btn btn-secondary m-1 btn-sm" (click)="onShowTaskPopin(task)">
                         <i class="fas fa-eye"></i>
                       </button>
-                      <button
-                        class="btn btn-primary btn-sm"
-                        [disabled]="!hasChanges(task) && !task?.modified"
-                        (click)="updateTask(task, project)"
-                      >
+                      <button class="btn btn-primary btn-sm" [disabled]="!hasChanges(task) && !task?.modified" (click)="updateTask(task, project)">
                         <i class="fas fa-save"></i>
                       </button>
                     </td>
@@ -152,15 +106,12 @@
                 </ng-container>
 
                 <!-- Popin for seeing task details -->
-                <div class="task-card-popin" *ngIf="showTaskPopin && task.id === taskPopinId" 
-                    [ngClass]="{
+                <div class="task-card-popin" *ngIf="showTaskPopin && task.id === taskPopinId" [ngClass]="{
                       'priority-high': task.priority === 'HIGH',
                       'priority-medium': task.priority === 'MEDIUM',
                       'priority-low': task.priority === 'LOW'
                     }">
-                  <div
-                    class="popin-content"
-                  >
+                  <div class="popin-content">
                     <div class="card-body">
                       <h5 class="card-title">{{ task.name }}</h5>
                       <p class="card-text">{{ task.description }}</p>
@@ -182,10 +133,7 @@
                         </li>
                       </ul>
                     </div>
-                    <button
-                      class="btn btn-secondary close-button"
-                      (click)="closeTaskPopin()"
-                    >
+                    <button class="btn btn-secondary close-button" (click)="closeTaskPopin()">
                       Fermer
                     </button>
                   </div>
@@ -208,10 +156,7 @@
                         </thead>
                         <tbody>
                           <ng-container *ngFor="let user of users">
-                            <tr
-                              *ngIf="!isUserNotMember(project, user)"
-                              (click)="onAssignTaskToUser(user)"
-                            >
+                            <tr *ngIf="!isUserNotMember(project, user)" (click)="onAssignTaskToUser(user)">
                               <td>{{ user.userId }}</td>
                               <td>{{ user.userName }}</td>
                               <td>{{ user.email }}</td>
@@ -223,10 +168,7 @@
                     <ng-template #noUsers="">
                       <p>Personne n'est disponible sur ce projet</p>
                     </ng-template>
-                    <button
-                      class="btn btn-secondary close-button"
-                      (click)="closeAssignPopin()"
-                    >
+                    <button class="btn btn-secondary close-button" (click)="closeAssignPopin()">
                       Fermer
                     </button>
                   </div>
@@ -246,80 +188,36 @@
         <div class="row">
           <div class="col-12">
             <h4>Ajouter une tâche</h4>
-            <form
-              (ngSubmit)="onAddTask(taskForm, project.id)"
-              #taskForm="ngForm"
-            >
+            <form (ngSubmit)="onAddTask(taskForm, project.id)" #taskForm="ngForm">
               <div class="form-group">
                 <label for="taskName">Nom de la tâche</label>
-                <input
-                  class="form-control"
-                  id="taskName"
-                  name="taskName"
-                  type="text"
-                  #taskName="ngModel"
-                  ngModel
-                  required
-                />
+                <input class="form-control" id="taskName" name="taskName" type="text" #taskName="ngModel" ngModel required>
               </div>
-              <div
-                class="invalid-feedback"
-                *ngIf="taskName.touched && taskName.invalid && taskName.errors"
-              >
-                <ng-container
-                  class="invalid-feedback"
-                  *ngIf="taskName.errors['required']"
-                >
+              <div class="invalid-feedback" *ngIf="taskName.touched && taskName.invalid && taskName.errors">
+                <ng-container class="invalid-feedback" *ngIf="taskName.errors['required']">
                   Le nom de tâche ne peut pas être vide
                 </ng-container>
               </div>
               <div class="form-group">
                 <label for="taskDescription">Description</label>
-                <textarea
-                  class="form-control"
-                  id="taskDescription"
-                  name="taskDescription"
-                  #taskDescription="ngModel"
-                  ngModel
-                ></textarea>
+                <textarea class="form-control" id="taskDescription" name="taskDescription" #taskDescription="ngModel" ngModel></textarea>
               </div>
               <div class="form-group">
                 <label for="taskPriority">Priorité</label>
-                <select
-                  class="form-control"
-                  id="taskPriority"
-                  name="taskPriority"
-                  #taskpriority="ngModel"
-                  ngModel
-                  [(ngModel)]="taskPriority"
-                >
-                  <option
-                    *ngFor="let priority of priorities"
-                    [value]="priority"
-                  >
-                    {{ priority }}
-                  </option>
+                <select class="form-control" id="taskPriority" name="taskPriority" #taskpriority="ngModel" ngModel [(ngModel)]="taskPriority">
+                        <option *ngFor="let priority of priorities" [value]="priority" [selected]="priority === 'MEDIUM'">
+                          {{ priority }}
+                        </option>
                 </select>
               </div>
               <div class="form-group">
                 <label for="taskDueDate">Date d'échéance</label>
-                <input
-                  class="form-control"
-                  id="taskDueDate"
-                  name="taskDueDate"
-                  type="date"
-                  #taskDueDate="ngModel"
-                  ngModel
-                />
+                <input class="form-control" id="taskDueDate" name="taskDueDate" type="date" #taskDueDate="ngModel" ngModel>
               </div>
               <button class="btn btn-primary close-button" type="submit">
                 Ajouter
               </button>
-              <button
-                class="btn btn-secondary close-button"
-                type="button"
-                (click)="closeTaskForm()"
-              >
+              <button class="btn btn-secondary close-button" type="button" (click)="closeTaskForm()">
                 Fermer
               </button>
             </form>
@@ -346,10 +244,7 @@
           </thead>
           <tbody>
             <ng-container *ngFor="let user of users">
-              <tr
-                *ngIf="isUserNotMember(project, user)"
-                (click)="onAddMember(user, project)"
-              >
+              <tr *ngIf="isUserNotMember(project, user)" (click)="onAddMember(user, project)">
                 <td>{{ user.userId }}</td>
                 <td>{{ user.userName }}</td>
                 <td>{{ user.email }}</td>
@@ -361,10 +256,7 @@
       <ng-template #noUsers="">
         <p>Personne n'est disponible sur ce projet</p>
       </ng-template>
-      <button
-        class="btn btn-secondary close-button"
-        (click)="closeInvitePopin()"
-      >
+      <button class="btn btn-secondary close-button" (click)="closeInvitePopin()">
         Fermer
       </button>
     </div>
@@ -390,15 +282,8 @@
               <td>{{ member.user?.userName }}</td>
               <td>{{ member.user?.email }}</td>
               <td>
-                <select
-                  [disabled]="member.id.userId === loggedInUserId"
-                  (change)="onChangeRole(member.id.userId, project, $event)"
-                >
-                  <option
-                    *ngFor="let role of roles"
-                    [value]="role"
-                    [selected]="role === member.role"
-                  >
+                <select [disabled]="member.id.userId === loggedInUserId" (change)="onChangeRole(member.id.userId, project, $event)">
+                  <option *ngFor="let role of roles" [value]="role" [selected]="role === member.role">
                     {{ role }}
                   </option>
                 </select>
@@ -406,10 +291,7 @@
             </tr>
           </tbody>
         </table>
-        <button
-          class="btn btn-secondary close-button"
-          (click)="closeMembersPopin()"
-        >
+        <button class="btn btn-secondary close-button" (click)="closeMembersPopin()">
           Fermer
         </button>
       </div>

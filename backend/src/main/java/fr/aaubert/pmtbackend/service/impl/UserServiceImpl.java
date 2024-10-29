@@ -47,7 +47,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long updateUser(User user) {
-        User updatedUser = userRepository.save(user);
+        User existingUser = userRepository.findById(user.getUserId()).orElse(null);
+        if (existingUser == null) {
+            throw new EntityDontExistException();
+        }
+        existingUser.setNotifications(user.getNotifications());
+
+        User updatedUser = userRepository.save(existingUser);
         return updatedUser.getUserId();
     }
 

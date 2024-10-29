@@ -34,14 +34,13 @@ public class TaskServiceImpl implements TaskService {
 
     // Méthode pour créer une tâche dans un projet
     @Override
-    public Task createTask(Task task, Long projectId) {
+    public Task createTask(Task task, Long projectId, Long userId) {
         Optional<Project> project = projectRepository.findById(projectId);
         if (project.isPresent()) {
             task.setProject(project.get());
             Task savedTask = taskRepository.save(task);
 
             //record history
-            Long userId = getTaskMemberUser(savedTask.getId());
             recordTaskModification(savedTask, "CREATE", null, null, userId); // replace `1` with actual user ID
 
             return savedTask;
@@ -51,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
 
     // Méthode pour assigner une tâche à un membre spécifique
     @Override
-    public TaskMember assignTaskToUser(Long taskId, Long userId) {
+    public TaskMember assignTaskToUser(Long taskId, Long userId, Long authorId) {
         Optional<Task> task = taskRepository.findById(taskId);
         Optional<User> user = userRepository.findById(userId);
 
@@ -70,7 +69,7 @@ public class TaskServiceImpl implements TaskService {
             TaskMember savedMember = taskMemberRepository.save(taskMember);
 
                 //record history
-                recordTaskModification(task.get(), "ASSIGN", null, "Assigned to user " + userId, userId);
+                recordTaskModification(task.get(), "ASSIGN", null, "Assigned to user " + userId, authorId);
 
             return taskMemberRepository.save(taskMember);
 
@@ -96,7 +95,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(Task task, Long projectId) {
+    public Task updateTask(Task task, Long projectId, Long userId) {
 
         Optional<Project> project = projectRepository.findById(projectId);
         if (project.isPresent()) {
@@ -111,7 +110,6 @@ public class TaskServiceImpl implements TaskService {
             Task updatedTask = taskRepository.save(task);
 
             //record history
-            Long userId = getTaskMemberUser(updatedTask.getId());
             recordTaskModification(updatedTask, "UPDATE", oldValue, newValue, userId);
 
             return updatedTask;

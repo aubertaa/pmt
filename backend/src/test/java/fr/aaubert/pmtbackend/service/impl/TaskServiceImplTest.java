@@ -60,7 +60,7 @@ class TaskServiceImplTest {
         when(taskRepository.save(any(Task.class))).thenReturn(task);
 
         // Act
-        Task createdTask = taskServiceImpl.createTask(task, 1L);
+        Task createdTask = taskServiceImpl.createTask(task, 1L, 1L);
 
         // Assert
         assertNotNull(createdTask);
@@ -88,7 +88,7 @@ class TaskServiceImplTest {
         when(taskMemberRepository.save(any(TaskMember.class))).thenReturn(taskMember);
 
         // Act
-        TaskMember assignedTaskMember = taskServiceImpl.assignTaskToUser(1L, 1L);
+        TaskMember assignedTaskMember = taskServiceImpl.assignTaskToUser(1L, 1L, 1L);
 
         // Assert
         assertNotNull(assignedTaskMember);
@@ -162,7 +162,7 @@ class TaskServiceImplTest {
         when(taskMemberRepository.findByTaskId(1L)).thenReturn(taskMember);
 
         // Act
-        TaskMember assignedTaskMember = taskServiceImpl.assignTaskToUser(1L, 1L);
+        TaskMember assignedTaskMember = taskServiceImpl.assignTaskToUser(1L, 1L, 1L);
 
         // Assert
         verify(taskMemberRepository, times(2)).save(taskMember);
@@ -182,7 +182,7 @@ class TaskServiceImplTest {
         when(projectRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> taskServiceImpl.createTask(task, 1L));
+        assertThrows(RuntimeException.class, () -> taskServiceImpl.createTask(task, 1L, 1L));
     }
 
     @Test
@@ -191,7 +191,7 @@ class TaskServiceImplTest {
         when(taskRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> taskServiceImpl.assignTaskToUser(1L, 1L));
+        assertThrows(RuntimeException.class, () -> taskServiceImpl.assignTaskToUser(1L, 1L, 1L));
     }
 
     @Test
@@ -235,7 +235,7 @@ class TaskServiceImplTest {
         when(projectRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> taskServiceImpl.updateTask(task, 1L));
+        assertThrows(RuntimeException.class, () -> taskServiceImpl.updateTask(task, 1L, 1L));
     }
 
     @Test
@@ -254,7 +254,7 @@ class TaskServiceImplTest {
         when(taskRepository.save(task)).thenReturn(task);
 
         // Act & Assert
-        taskServiceImpl.updateTask(task, 1L);
+        taskServiceImpl.updateTask(task, 1L, 1L);
         verify(taskRepository, times(1)).save(task);
     }
 

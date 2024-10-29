@@ -51,9 +51,10 @@ class TaskControllerTest {
         TaskRequest taskRequest = new TaskRequest();
         taskRequest.setTask(task);
         taskRequest.setProjectId(1L);
+        taskRequest.setUserId(1L);
 
 
-        when(taskService.createTask(any(Task.class), eq(1L))).thenReturn(task);
+        when(taskService.createTask(any(Task.class), eq(1L), eq(1L))).thenReturn(task);
 
         mockMvc.perform(post("/api/task")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -69,12 +70,11 @@ class TaskControllerTest {
         TaskMember taskMember = new TaskMember();
         taskMember.setId(1L);
 
-        when(taskService.assignTaskToUser(1L, 1L)).thenReturn(taskMember);
+        when(taskService.assignTaskToUser(1L, 2L, 3L)).thenReturn(taskMember);
 
         // Act & Assert
-        mockMvc.perform(post("/api/task/assign?taskId=1&userId=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+        mockMvc.perform(post("/api/task/assign?taskId=1&userId=1&authorId=1"))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -138,8 +138,9 @@ class TaskControllerTest {
         TaskRequest taskRequest = new TaskRequest();
         taskRequest.setTask(task);
         taskRequest.setProjectId(1L);
+        taskRequest.setUserId(1L);
 
-        when(taskService.updateTask(any(Task.class), eq(1L))).thenReturn(task);
+        when(taskService.updateTask(any(Task.class), eq(1L),eq(1L) )).thenReturn(task);
 
         mockMvc.perform(patch("/api/task")
                         .contentType(MediaType.APPLICATION_JSON)

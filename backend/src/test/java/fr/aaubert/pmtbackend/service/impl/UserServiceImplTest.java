@@ -1,5 +1,6 @@
 package fr.aaubert.pmtbackend.service.impl;
 
+import fr.aaubert.pmtbackend.exceptions.EntityDontExistException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -79,10 +80,28 @@ public class UserServiceImplTest {
         user.setPassword("password");
         user.setUserId(456L);
 
+        when(userRepository.findById(456L)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
 
         Long updatedUser = userService.updateUser(user);
         assertEquals(456L, updatedUser);
+
+    }
+
+    @Test
+    void testUpdateUser_ShouldThrowEntityDontExistException() {
+        // Test case 1: Updating a non-existing user
+        User user = new User();
+        user.setUserName("john.doe");
+        user.setEmail("mail@mail");
+        user.setPassword("password");
+        user.setUserId(456L);
+
+        when(userRepository.findById(456L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityDontExistException.class, () -> {
+            userService.updateUser(user);
+        });
 
     }
 

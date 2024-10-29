@@ -29,22 +29,22 @@ public class TaskController {
     @PostMapping("/task")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<Task> createTask(@RequestBody @Valid TaskRequest taskRequest) {
-        Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId());
+        Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId(), taskRequest.getUserId());
         return ResponseEntity.ok(task);
     }
 
     @PatchMapping("/task")
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<Task> updateTask(@RequestBody @Valid TaskRequest taskRequest) {
-        Task updatedTask = taskService.updateTask(taskRequest.getTask(), taskRequest.getProjectId());
+        Task updatedTask = taskService.updateTask(taskRequest.getTask(), taskRequest.getProjectId(), taskRequest.getUserId());
         return ResponseEntity.ok(updatedTask);
     }
 
     // Endpoint pour assigner une tâche à un membre
     @PostMapping("/task/assign")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam("taskId") Long taskId, @RequestParam("userId") Long userId) {
-        TaskMember taskMember = taskService.assignTaskToUser(taskId, userId);
+    public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam("taskId") Long taskId, @RequestParam("userId") Long userId, @RequestParam("authorId") Long authorId) {
+        TaskMember taskMember = taskService.assignTaskToUser(taskId, userId, authorId);
         return ResponseEntity.ok(taskMember);
     }
 

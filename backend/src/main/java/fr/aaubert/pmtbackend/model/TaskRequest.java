@@ -10,5 +10,6 @@ public class TaskRequest {
     // Getters and Setters
     private Task task;
     private Long projectId;
+    private Long userId;
 
 }

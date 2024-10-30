@@ -53,12 +53,17 @@ public class TaskController {
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam("taskId") Long taskId, @RequestParam("userId") Long userId, @RequestParam("authorId") Long authorId) {
         TaskMember taskMember = taskService.assignTaskToUser(taskId, userId, authorId);
-        User user = userService.getUserByUserId(userId);
-        String toEmail =user.getEmail();
-        String subject = "Task assigned";
-        String body = "Task " + taskId + " has been assigned to " + user.getUserName() + ". Please check your dashboard for more details.";
 
-        emailService.sendEmail(toEmail, subject, body);
+        User user = userService.getUserByUserId(userId);
+        String subject = "Task assigned";
+        String body = "Task " + taskId + " has been assigned to " + user.getUserName() + ". Please check your PMT dashboard for more details.";
+
+        //get all users email having notifications = true
+        List<String> destEmails = userService.getAllUsersEmailHavingNotificationsTrue();
+        for (String toEmail : destEmails) {
+            emailService.sendEmail(toEmail, subject, body);
+        }
+
         return ResponseEntity.ok(taskMember);
     }
 

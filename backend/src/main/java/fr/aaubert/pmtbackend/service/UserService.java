@@ -23,5 +23,5 @@ public interface UserService {
 
     User getUserByUserId(Long userId);
 
-    //User getUserById(Long userId);
+    List<String> getAllUsersEmailHavingNotificationsTrue();
 }

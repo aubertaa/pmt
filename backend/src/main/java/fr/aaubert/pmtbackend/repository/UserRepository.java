@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -27,11 +29,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
         """)
     void setNotificationStatusForUserId(Long userId, Boolean notificationsActive);
 
-/*
+
     @Query("""
-                 FROM User
-                 WHERE email = :email
-            """)
-    User findByEmail(String email);*/
+             SELECT email
+             FROM User
+             WHERE notifications = true
+        """)
+    List<String> getAllUsersEmailHavingNotificationsTrue();
 
 }

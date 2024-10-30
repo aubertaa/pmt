@@ -152,6 +152,7 @@ class TaskServiceImplTest {
 
         User user = new User();
         user.setUserId(1L);
+        user.setUserName("toto");
 
         TaskMember taskMember = new TaskMember();
         taskMember.setTask(task);

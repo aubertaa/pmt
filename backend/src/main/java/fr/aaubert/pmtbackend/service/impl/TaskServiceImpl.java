@@ -41,7 +41,7 @@ public class TaskServiceImpl implements TaskService {
             Task savedTask = taskRepository.save(task);
 
             //record history
-            recordTaskModification(savedTask, "CREATE", null, null, userId); // replace `1` with actual user ID
+            recordTaskModification(savedTask, "CREATE", null, task.toString(), userId);
 
             return savedTask;
         }
@@ -57,8 +57,10 @@ public class TaskServiceImpl implements TaskService {
         if (task.isPresent() && user.isPresent()) {
             TaskMember taskMember = taskMemberRepository.findByTaskId(taskId);
 
+            String previousAssignee = null;
             if (taskMember != null) {
                 // Task already has a user assigned, update to new user
+                previousAssignee = taskMember.getUser().getUserName().toString();
                 taskMember.setUser(user.get());
             } else {
                 // No TaskMember exists, create a new one
@@ -69,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
             TaskMember savedMember = taskMemberRepository.save(taskMember);
 
                 //record history
-                recordTaskModification(task.get(), "ASSIGN", null, "Assigned to user " + userId, authorId);
+                recordTaskModification(task.get(), "ASSIGN", previousAssignee != null ? "Assigned to " + previousAssignee : "Not assigned" , "Assigned to " + user.get().getUserName(), authorId);
 
             return taskMemberRepository.save(taskMember);
 

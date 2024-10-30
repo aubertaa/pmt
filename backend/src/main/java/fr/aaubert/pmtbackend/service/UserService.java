@@ -19,7 +19,9 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    Long updateUser(@Valid User user);
+    void setNotificationStatusForUserId(Long userId, Boolean notificationsActive);
+
+    User getUserByUserId(Long userId);
 
     //User getUserById(Long userId);
 }

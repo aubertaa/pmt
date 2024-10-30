@@ -9,6 +9,7 @@ import fr.aaubert.pmtbackend.repository.UserRepository;
 import fr.aaubert.pmtbackend.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -96,6 +97,7 @@ public class TaskServiceImpl implements TaskService {
         return taskMemberRepository.getMemberUserIdByTaskId(task_id);
     }
 
+    @Transactional
     @Override
     public Task updateTask(Task task, Long projectId, Long userId) {
 

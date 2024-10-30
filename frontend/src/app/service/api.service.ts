@@ -160,8 +160,12 @@ export class ApiService {
   updateUserNotificationSetting (user: User, notificationsActive: boolean) {
     user.notifications = notificationsActive
 
+    const params = new HttpParams()
+      .set('userId', user.userId)
+      .set('notificationsActive', notificationsActive);
+
     return this.httpClient
-      .post<unknown>(`${this.apiUrl}/user`, user)
+      .post<unknown>(`${this.apiUrl}/user/notification`, null, { params })
       .pipe(catchError(this.catchError));
   }
 

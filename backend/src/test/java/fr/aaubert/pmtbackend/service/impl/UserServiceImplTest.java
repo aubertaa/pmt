@@ -71,39 +71,17 @@ public class UserServiceImplTest {
 
     }
 
-    @Test
-    void testUpdateUser() {
-        //Updating an existing user
-        User user = new User();
-        user.setUserName("john.doe");
-        user.setEmail("mail@mail");
-        user.setPassword("password");
-        user.setUserId(456L);
-
-        when(userRepository.findById(456L)).thenReturn(Optional.of(user));
-        when(userRepository.save(user)).thenReturn(user);
-
-        Long updatedUser = userService.updateUser(user);
-        assertEquals(456L, updatedUser);
-
-    }
 
     @Test
-    void testUpdateUser_ShouldThrowEntityDontExistException() {
-        // Test case 1: Updating a non-existing user
-        User user = new User();
-        user.setUserName("john.doe");
-        user.setEmail("mail@mail");
-        user.setPassword("password");
-        user.setUserId(456L);
+    void setNotificationStatusForUserId_withValidUserId_updatesNotificationStatus() {
+        Long userId = 1L;
+        Boolean notificationsActive = true;
 
-        when(userRepository.findById(456L)).thenReturn(Optional.empty());
+        userService.setNotificationStatusForUserId(userId, notificationsActive);
 
-        assertThrows(EntityDontExistException.class, () -> {
-            userService.updateUser(user);
-        });
-
+        verify(userRepository, times(1)).setNotificationStatusForUserId(userId, notificationsActive);
     }
+
 
     @Test
     void testGetAllUsers() {

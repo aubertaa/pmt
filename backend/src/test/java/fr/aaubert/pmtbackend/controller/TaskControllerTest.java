@@ -2,8 +2,10 @@ package fr.aaubert.pmtbackend.controller;
 
 
 import fr.aaubert.pmtbackend.model.*;
+import fr.aaubert.pmtbackend.service.EmailService;
 import fr.aaubert.pmtbackend.service.TaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.aaubert.pmtbackend.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -34,8 +36,14 @@ class TaskControllerTest {
     @MockBean
     private TaskService taskService;
 
+    @MockBean
+    private UserService userService;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private EmailService emailService;
 
 
     @Test
@@ -67,13 +75,21 @@ class TaskControllerTest {
     @Test
     void assignTaskToUser_shouldReturnTaskMember_whenValidRequest() throws Exception {
         // Arrange
+
+        User user = new User();
+        user.setUserId(1L);
+        user.setUserName("User 1");
+        user.setEmail("mail@mail");
+
         TaskMember taskMember = new TaskMember();
         taskMember.setId(1L);
+        taskMember.setUser(user);
 
         when(taskService.assignTaskToUser(1L, 2L, 3L)).thenReturn(taskMember);
+        when(userService.getUserByUserId(1L)).thenReturn(user);
 
         // Act & Assert
-        mockMvc.perform(post("/api/task/assign?taskId=1&userId=1&authorId=1"))
+        mockMvc.perform(post("/api/task/assign?taskId=1&userId=1&authorId=1&notifications=true"))
                 .andExpect(status().isOk());
     }
 

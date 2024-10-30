@@ -92,11 +92,11 @@ export class TaskService {
     this.apiService.assignTaskToUser(userId, taskId, authorId).subscribe({
       next: () => {
         this.getTasks();
-        this.toastService.addToast('Task added to project !');
+        this.toastService.addToast('Task assigned !');
       },
       error: () => {
         this.toastService.addToast(
-          'Task not added to project !');
+          'Task not assigned !');
       },
     });
   }

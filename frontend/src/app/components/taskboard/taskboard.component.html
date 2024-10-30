@@ -19,10 +19,10 @@
             <h5 class="card-title">{{ task.name }}</h5>
             <p class="card-text">{{ task.description }}</p>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item"><strong>Priority:</strong> {{ task.priority }}</li>
-              <li class="list-group-item"><strong>Due Date:</strong> {{ task.dueDate | date:'shortDate' }}</li>
-              <li class="list-group-item"><strong>Assigned To:</strong> {{ task.assignedTo || 'Unassigned' }}</li>
-              <li class="list-group-item"><strong>Project ID:</strong> {{ task.projectId || 'N/A' }}</li>
+              <li class="list-group-item"><strong>Priorité:</strong> {{ task.priority }}</li>
+              <li class="list-group-item"><strong>Echéance:</strong> {{ task.dueDate | date:'shortDate' }}</li>
+              <li class="list-group-item"><strong>Assignée à:</strong> {{ getUserName(task?.assignedTo)  || '-' }}</li>
+              <li class="list-group-item"><strong>ID projet:</strong> {{ task.projectId || 'N/A' }}</li>
             </ul>
           </div>
         </div>

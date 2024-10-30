@@ -117,18 +117,18 @@
                       <p class="card-text">{{ task.description }}</p>
                       <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                          <strong>Priority:</strong> {{ task.priority }}
+                          <strong>Priorité:</strong> {{ task.priority }}
                         </li>
                         <li class="list-group-item">
-                          <strong>Due Date:</strong>
+                          <strong>Echéance:</strong>
                           {{ task.dueDate | date : "shortDate" }}
                         </li>
                         <li class="list-group-item">
-                          <strong>Assigned To:</strong>
-                          {{ task.assignedTo || "Unassigned" }}
+                          <strong>Assignée à:</strong>
+                          {{ getUserName(task?.assignedTo)  || "-"  }}
                         </li>
                         <li class="list-group-item">
-                          <strong>Project ID:</strong>
+                          <strong>ID projet:</strong>
                           {{ task.projectId || "N/A" }}
                         </li>
                       </ul>

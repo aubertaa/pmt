@@ -189,7 +189,7 @@ export class ApiService {
   assignTaskToUser (userId: number, taskId: number, authorId:number) {
     const params = new HttpParams()
       .set('taskId', taskId)
-      .set('userId', userId);
+      .set('userId', userId)
       .set('authorId', authorId);
 
     return this.httpClient

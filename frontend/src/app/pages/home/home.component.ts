@@ -103,6 +103,7 @@ export class HomeComponent implements OnInit {
     this.taskService.getTasks();
     this.authService.getUsers();
     this.taskService.getTaskHistoryItems();
+    this.showHistory = false;
     if (this.isLoggedIn) {
       const loggedInUserId = localStorage.getItem('loggedInUserId');
       if (loggedInUserId) {

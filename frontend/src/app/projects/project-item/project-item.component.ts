@@ -94,6 +94,7 @@ export class ProjectItemComponent implements OnInit {
     );
 
     formTask.reset();
+    this.taskPriority = 'MEDIUM';
     this.closeTaskForm();
   }
 

@@ -138,9 +138,11 @@
 <div class="container mt-5" *ngIf="showTaskboard">
   <div *ngIf="tasks$ | async as tasks">
     <div *ngIf="statuses$ | async as statuses">
-      <app-taskboard [tasks]="tasks" [statuses]="statuses"></app-taskboard>
+    <div *ngIf="users$ | async as users">
+      <app-taskboard [tasks]="tasks" [statuses]="statuses" [users]="users"></app-taskboard>
     </div>
   </div>
+</div>
 </div>
 
 <!-- history -->

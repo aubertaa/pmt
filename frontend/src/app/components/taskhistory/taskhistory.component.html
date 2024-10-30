@@ -7,7 +7,7 @@
                     Tâche: {{ historyItem.task.name }}
                 </span>
                 <span class="text-muted small">
-                    Modifiée par: {{ historyItem.dateModified | date:'short' }}
+                    Modifiée par: {{ getUserName(historyItem.modifiedBy) || '-' }}
                 </span>
             </div>
             <div class="card-body">
@@ -25,7 +25,7 @@
                         <div class="me-auto">
                             <div>
                                 <strong>Modifiée par:</strong> 
-                                {{ getUserName(historyItem.modifiedBy) || 'Unknown User' }}
+                                {{ getUserName(historyItem.modifiedBy) || '-' }}
                             </div>
                             <div>
                                 <strong>Type de modification:</strong> {{ historyItem.modificationType }}

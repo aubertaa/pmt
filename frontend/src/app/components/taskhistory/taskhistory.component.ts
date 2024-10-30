@@ -15,5 +15,5 @@ export class TaskhistoryComponent {
   getUserName (modified_by: number) {
     return this.users.find(user => user.userId === modified_by)?.userName;
   }
-  
+
 }

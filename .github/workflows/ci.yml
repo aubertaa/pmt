@@ -116,11 +116,11 @@ jobs:
           done
         working-directory: .
 
-      - name: frontend service
+      - name: swagger-ui
         run: |
           success=false
-          for i in {1..10}; do
-            if curl -f http://localhost:4201; then
+          for i in {1..20}; do
+            if curl -f http://localhost:8081/swagger-ui/index.html#/user-controller/register; then
               success=true
               break
             else
@@ -136,7 +136,7 @@ jobs:
       - name: backend api
         run: |
           success=false
-          for i in {1..10}; do
+          for i in {1..20}; do
             if curl -f http://localhost:8081; then
               success=true
               break
@@ -150,11 +150,11 @@ jobs:
             exit 1
           fi
 
-      - name: swagger-ui
+      - name: frontend service
         run: |
           success=false
-          for i in {1..10}; do
-            if curl -f http://localhost:8081/swagger-ui/index.html#/user-controller/register; then
+          for i in {1..20}; do
+            if curl -f http://localhost:4201; then
               success=true
               break
             else

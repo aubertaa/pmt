@@ -37,7 +37,9 @@ public class Project {
 
     @Override
     public String toString() {
-        return "Project [projectName=" + projectName + ", description=" + description + ", startDate=" + new SimpleDateFormat("yyyy-MM-dd").format(startDate)
+        return "Project [projectName=" + projectName +
+                ", description=" + description +
+                ", startDate=" + (startDate != null ? new SimpleDateFormat("yyyy-MM-dd").format(startDate) : "null")
                 + "]";
     }
 

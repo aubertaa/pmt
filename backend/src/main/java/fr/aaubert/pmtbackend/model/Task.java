@@ -33,4 +33,15 @@ public class Task {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", name='" + (name != null ? name : "null") + '\'' +
+                ", description='" + (description != null ? description : "null") + '\'' +
+                ", dueDate=" + (dueDate != null ? dueDate : "null") +
+                ", priority=" + (priority != null ? priority : "null") +
+                ", status=" + (status != null ? status : "null") +
+                '}';
+    }
 }

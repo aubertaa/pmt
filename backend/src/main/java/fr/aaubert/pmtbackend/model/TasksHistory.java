@@ -25,10 +25,10 @@ public class TasksHistory {
     @Column(name = "modification_type", length = 20, nullable = false)
     private String modificationType;
 
-    @Column(name = "old_value", length = 255)
+    @Column(name = "old_value", length = 1000)
     private String oldValue;
 
-    @Column(name = "new_value", length = 255)
+    @Column(name = "new_value", length = 1000)
     private String newValue;
 
     @Temporal(TemporalType.TIMESTAMP)

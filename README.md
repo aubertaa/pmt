@@ -1,5 +1,7 @@
 # PMT Project Management Tool
 
+[![CI](https://github.com/aubertaa/pmt/actions/workflows/ci.yml/badge.svg)](https://github.com/aubertaa/pmt/actions/workflows/ci.yml)
+
 ## Description
 PMT est une plateforme de gestion de projet collaboratif destinée aux équipes de développement logiciel.
 L’application permettra aux équipes de planifier, suivre et collaborer sur des projets de manière efficace.
@@ -65,7 +67,7 @@ Voici un résumé des permissions en fonction des rôles:
   - création des images Docker via `docker-compose`
   - run des tests au niveau système :
     - réponse de l'api, de l'interface, de la base de données, de l'interface swagger
-  - push des images Docker sur le Docker Hub
+  - push des images Docker sur le Docker Hub (https://hub.docker.com/u/aubertaa)
 
 - La CI est déclenchée automatiquement lors du push dans le dépôt Github.
 - Pour déclencher un build en local, il suffit de lancer la commande suivante à la racine du projet:
@@ -82,6 +84,21 @@ docker-compose build
 docker-compose up --no-build
 ```
 
+## Liens utiles
+
+### Sources et livrables
+- [Github repository](https://github.com/aubertaa/pmt/)
+- [Docker Hub](https://hub.docker.com/u/aubertaa)
+- [Github Actions](https://github.com/aubertaa/pmt/actions)
+- [Artifacts de CI](https://github.com/aubertaa/pmt/actions/workflows/ci.yml) (click on last run to see the artifacts)
+  - Rapport de test backend (avec couverture)
+  - Rapport de test frontend (avec couverture)
+  - Binaire autonome de l'application backend
+
+### Accès à l'application
+- [Swagger UI](http://localhost:8081/swagger-ui.html)
+- [Angular App](http://localhost:4201)
+- [Spring Boot App](http://localhost:8081)
 
 
 

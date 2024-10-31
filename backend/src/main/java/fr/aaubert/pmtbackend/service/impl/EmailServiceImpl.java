@@ -19,8 +19,8 @@ public class EmailServiceImpl implements EmailService {
 
     private final SendGrid sendGridClient;
 
-    public EmailServiceImpl(@Value("${sendgrid.api.key}") String apiKey) {
-        this.sendGridClient = new SendGrid(apiKey);
+    public EmailServiceImpl() {
+        this.sendGridClient = new SendGrid(System.getenv("SENDGRID_API_KEY"));
     }
 
     @Override

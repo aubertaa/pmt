@@ -118,23 +118,6 @@ jobs:
           done
         working-directory: .
 
-      - name: swagger-ui
-        run: |
-          success=false
-          for i in {1..20}; do
-            if curl -f http://localhost:8081/swagger-ui/index.html#/user-controller/register; then
-              success=true
-              break
-            else
-              sleep 10
-            fi
-          done
-          
-          if [ "$success" = false ]; then
-            echo "Curl failed after 10 attempts"
-            exit 1
-          fi
-
       - name: backend api
         run: |
           success=false
@@ -143,7 +126,24 @@ jobs:
               success=true
               break
             else
-              sleep 10
+              sleep 20
+            fi
+          done
+          
+          if [ "$success" = false ]; then
+            echo "Curl failed after 10 attempts"
+            exit 1
+          fi
+
+      - name: swagger-ui
+        run: |
+          success=false
+          for i in {1..20}; do
+            if curl -f http://localhost:8081/swagger-ui/index.html#/user-controller/register; then
+              success=true
+              break
+            else
+              sleep 20
             fi
           done
           
@@ -160,7 +160,7 @@ jobs:
               success=true
               break
             else
-              sleep 10
+              sleep 20
             fi
           done
           

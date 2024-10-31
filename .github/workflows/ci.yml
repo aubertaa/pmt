@@ -175,8 +175,8 @@ jobs:
       - name: Tag and Push Images to Docker Hub
         run: |
           # Tag images
-          docker tag pmt-frontend:latest ${{ secrets.DOCKER_USERNAME }}/pmt-frontend:latest
-          docker tag pmt-backend:latest ${{ secrets.DOCKER_USERNAME }}/pmt-backend:latest
+          docker tag aubertaa/pmt-frontend:latest ${{ secrets.DOCKER_USERNAME }}/pmt-frontend:latest
+          docker tag aubertaa/pmt-backend:latest ${{ secrets.DOCKER_USERNAME }}/pmt-backend:latest
 
           # Push images
           docker push ${{ secrets.DOCKER_USERNAME }}/pmt-backend:latest

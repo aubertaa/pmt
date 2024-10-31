@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: 'pmt-frontend'
+    image: 'aubertaa/pmt-frontend'
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -13,7 +13,7 @@ services:
 
 
   backend:
-    image: 'pmt-backend'
+    image: 'aubertaa/pmt-backend'
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -23,6 +23,12 @@ services:
       - mysql
     networks:
       - backend
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   adminer:
     image: 'adminer'
@@ -45,6 +51,7 @@ services:
       - '3306:3306'
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - backend
 

@@ -1,34 +1,38 @@
 <div class="container my-4">
     <h2>Historique de modification des tâches</h2>
     <div *ngIf="taskHistoryItems && taskHistoryItems.length > 0">
-        <div class="card mb-3" *ngFor="let historyItem of taskHistoryItems">
+        <div 
+            class="card mb-3 alert" 
+            *ngFor="let historyItem of taskHistoryItems" 
+            [ngClass]="{
+                'alert-success': historyItem.modificationType === 'CREATE',
+                'alert-warning': historyItem.modificationType === 'UPDATE',
+                'alert-info': historyItem.modificationType === 'ASSIGN'
+            }"
+        >
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span class="fw-bold">
-                    Tâche: {{ historyItem.task.name }}
-                </span>
-                <span class="text-muted small">
-                    Modifiée par: {{ getUserName(historyItem.modifiedBy) || '-' }}
-                </span>
+                <span class="fw-bold">{{ '[' + historyItem.modificationType + ']' }} Tâche: {{ historyItem.task.name }}</span>
+                <span class="text-muted small">Modifiée par: {{ getUserName(historyItem.modifiedBy) || '-' }}</span>
             </div>
+
             <div class="card-body">
-                <!-- Task details -->
+                <!-- Task Details -->
                 <h5 class="card-title">{{ historyItem.task.description }}</h5>
                 <p class="card-text">
-                    <strong>Priorité:</strong> {{ historyItem.task.priority }} <br>
-                    <strong>Statut:</strong> {{ historyItem.task.status }} <br>
-                    <strong>Echéance:</strong> {{ historyItem.task.dueDate | date:'mediumDate' }}
+                    <strong>Priorité: </strong> {{ historyItem.task.priority }} <br>
+                    <strong>Statut: </strong> {{ historyItem.task.status }} <br>
+                    <strong>Echéance: </strong> {{ historyItem.task.dueDate | date:'mediumDate' }}
                 </p>
 
-                <!-- Modification details -->
+                <!-- Modification Details -->
                 <div class="list-group">
-                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                    <div 
+                        class="list-group-item d-flex justify-content-between align-items-start"
+                       
+                    >
                         <div class="me-auto">
                             <div>
-                                <strong>Modifiée par:</strong> 
-                                {{ getUserName(historyItem.modifiedBy) || '-' }}
-                            </div>
-                            <div>
-                                <strong>Type de modification:</strong> {{ historyItem.modificationType }}
+                                <strong>Modifiée par: </strong> {{ getUserName(historyItem.modifiedBy) || '-' }}
                             </div>
                         </div>
                         <span class="badge bg-primary rounded-pill">
@@ -36,12 +40,14 @@
                         </span>
                     </div>
 
-                    <!-- Old and New Values -->
+                    <!-- Old and New Values, Colored for Emphasis -->
                     <div class="list-group-item">
-                        <strong>Ancienne valeur:</strong> {{ historyItem.oldValue }}
+                        <strong class="text-muted">Ancienne valeur: </strong> 
+                        <span class="text-decoration-underline text-danger">{{ historyItem.oldValue }}</span>
                     </div>
                     <div class="list-group-item">
-                        <strong>Nouvelle valeur:</strong> {{ historyItem.newValue }}
+                        <strong class="text-muted">Nouvelle valeur: </strong> 
+                        <span class="text-decoration-underline text-success">{{ historyItem.newValue }}</span>
                     </div>
                 </div>
             </div>

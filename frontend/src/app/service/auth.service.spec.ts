@@ -160,8 +160,8 @@ describe('AuthService', () => {
     describe('getUsers', () => {
       it('should fetch users successfully and update the usersSubject', () => {
         const usersResponse = [
-          { userName: 'user1', email: 'user1@example.com', userId: 1 },
-          { userName: 'user2', email: 'user2@example.com', userId: 2 },
+          { userName: 'user1', email: 'user1@example.com', userId: 1, notifications: true},
+          { userName: 'user2', email: 'user2@example.com', userId: 2, notifications: false },
         ];
 
         (apiServiceMock as any).getUsers.mockReturnValue(of(usersResponse));

@@ -41,7 +41,6 @@ export interface TaskHistoryItem {
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = 'http://localhost:8080/api'; // Adjust the base URL as necessary
 
   tasksSubject = new BehaviorSubject<Task[]>([]);
   tasks$ = this.tasksSubject.asObservable();

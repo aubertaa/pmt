@@ -4,7 +4,7 @@ import { Project, ProjectService } from '../../service/project.service';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Task, TaskHistoryItem, TaskService } from '../../service/task.service';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 @Component({
   templateUrl: './home.component.html',
@@ -15,6 +15,8 @@ export class HomeComponent implements OnInit {
   notificationsActive: boolean = false;
 
   isLoggedIn: boolean = this.authService.isAuthenticated();
+  loggedInUserId: number = parseInt(localStorage.getItem('loggedInUserId') ?? "0");
+
   showTaskboard: boolean = false;
   showHistory: boolean = false;
   projects: Project[] = [];
@@ -49,15 +51,26 @@ export class HomeComponent implements OnInit {
   toggleTaskboard () {
     this.showTaskboard = !this.showTaskboard;
     if (this.showTaskboard) {
-      this.showTaskboard = true;
-    } else {
-      this.showTaskboard = false;
-    }
+      this.showHistory = false;
+    } 
   }
 
-  onShowHistory() {
+  getLoggedInUserName () {
+    const userName$ = this.users$.pipe(
+      map(users => {
+        const user = users.find(u => u.userId === this.loggedInUserId);
+        return user ? user.userName : null; // Return null or handle case if user is not found
+      })
+    );
+    return userName$
+  }
+
+  onShowHistory () {
     this.taskService.getTaskHistoryItems();
     this.showHistory = !this.showHistory;
+    if (this.showHistory) {
+      this.showTaskboard = false;
+    } 
   }
 
   toggleNotifications () {
@@ -110,6 +123,10 @@ export class HomeComponent implements OnInit {
         this.projectService.getProjects(parseInt(loggedInUserId));
         this.projectService.projects$.subscribe((projects) => {
           this.projects = projects;
+        });
+        this.users$.subscribe(users => {
+          const user = users.find(u => u.userId === this.loggedInUserId);
+          this.notificationsActive = user ? user.notifications : false;
         });
       }
     }

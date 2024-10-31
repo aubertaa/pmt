@@ -42,7 +42,7 @@
       <div *ngIf="tasks">
         <div class="row mb-3 justify-content-left">
           <div class="col-9">
-            <button class="btn btn-primary btn-add-task" (click)="onShowAddTaskForm()">
+            <button class="btn btn-primary btn-add-task" [disabled]="project.userRole !== 'OWNER' && project.userRole !== 'CONTRIBUTOR'" (click)="onShowAddTaskForm()">
               Ajouter une tâche
             </button>
           </div>
@@ -69,30 +69,31 @@
                   <tr>
                     <td>{{ task?.id }}</td>
                     <td>
-                      <input [(ngModel)]="task.name" (ngModelChange)="onTaskChange(task)">
+                      <input [disabled]="project.userRole !== 'OWNER' && project.userRole !== 'CONTRIBUTOR'" [(ngModel)]="task.name" (ngModelChange)="onTaskChange(task)">
                     </td>
                     <td>
-                      <input [(ngModel)]="task.description" (ngModelChange)="onTaskChange(task)">
+                      <input [disabled]="project.userRole !== 'OWNER' && project.userRole !== 'CONTRIBUTOR'" [(ngModel)]="task.description" (ngModelChange)="onTaskChange(task)">
                     </td>
                     <td>
-                      <select [(ngModel)]="task.priority" (ngModelChange)="onTaskChange(task)">
+                      <select [disabled]="project.userRole !== 'OWNER' && project.userRole !== 'CONTRIBUTOR'" [(ngModel)]="task.priority" (ngModelChange)="onTaskChange(task)">
                         <option *ngFor="let priority of priorities" [value]="priority" [selected]="priority === task.priority">
                           {{ priority }}
                         </option>
                       </select>
                     </td>
                     <td>
-                      <select [(ngModel)]="task.status" (ngModelChange)="onTaskChange(task)">
+                      <select [disabled]="project.userRole !== 'OWNER' && project.userRole !== 'CONTRIBUTOR'" [(ngModel)]="task.status" (ngModelChange)="onTaskChange(task)">
                         <option *ngFor="let status of statuses" [value]="status" [selected]="status === task.status">
                           {{ status }}
                         </option>
                       </select>
                     </td>
                     <td>
-                      <input type="date" [(ngModel)]="task.dueDate" (ngModelChange)="onTaskChange(task)">
+                      <input [disabled]="project.userRole !== 'OWNER' && project.userRole !== 'CONTRIBUTOR'" type="date" [(ngModel)]="task.dueDate" (ngModelChange)="onTaskChange(task)">
                     </td>
-                    <td (click)="openAssignPopin($event, task)">
-                      {{ getUserName(task?.assignedTo) }}
+                    <td >
+                      <button class="btn btn-assign" [disabled]="project.userRole !== 'OWNER' && project.userRole !== 'CONTRIBUTOR'" (click)="openAssignPopin($event, task)">
+                      {{ getUserName(task?.assignedTo) || "Assigner..." }}</button>
                     </td>
                     <td>
                       <button class="btn btn-secondary m-1 btn-sm" (click)="onShowTaskPopin(task)">
@@ -244,7 +245,7 @@
           </thead>
           <tbody>
             <ng-container *ngFor="let user of users">
-              <tr *ngIf="isUserNotMember(project, user)" (click)="onAddMember(user, project)">
+              <tr *ngIf="isUserNotMember(project, user)"  (click)="onAddMember(user, project)">
                 <td>{{ user.userId }}</td>
                 <td>{{ user.userName }}</td>
                 <td>{{ user.email }}</td>

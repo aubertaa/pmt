@@ -17,7 +17,24 @@ describe('TaskhistoryComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+
+  describe('getUsers', () => {
+    it('should fetch users and update statusesSubject on success', () => {
+
+      component.users = [{
+        userId: 1,
+        userName: 'Alice',
+        email: 'mail',
+        notifications: true
+      }, {
+        userId: 2,
+        userName: 'Bob',
+        email: 'mail',
+        notifications: true
+      }];
+
+      expect(component.getUserName(1)).toEqual('Alice');
+    });
+
   });
 });

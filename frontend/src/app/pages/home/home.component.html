@@ -43,7 +43,7 @@
   </div>
 </div>
 
-<div class="text-center mt-5">Bienvenue, vous êtes connecté !</div>
+<div class="text-center mt-5">Bienvenue, {{ getLoggedInUserName() | async }} vous êtes connecté !</div>
 <div class="container mt-5" *ngIf="!showTaskboard && !showHistory">
   <form class="row mb-3" (ngSubmit)="onAddProject(fproject)" #fproject="ngForm">
     <h1 class="text-center my-4">Liste des projets</h1>

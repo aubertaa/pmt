@@ -326,7 +326,7 @@ describe('ApiService', () => {
     it('should assign a task to a user', () => {
       const mockResponse: CreatedResponse = { id: 1 };
 
-      service.assignTaskToUser(1, 1).subscribe((response) => {
+      service.assignTaskToUser(1, 1, 1).subscribe((response) => {
         expect(response).toEqual(mockResponse);
       });
 
@@ -364,7 +364,8 @@ describe('ApiService', () => {
           'HIGH',
           'TODO',
           new Date(),
-          1
+          1,
+          0
         )
         .subscribe((response) => {
           expect(response).toEqual(mockResponse);

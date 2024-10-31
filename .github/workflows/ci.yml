@@ -25,6 +25,8 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Build with Gradle Wrapper
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
         run: chmod +x gradlew && ./gradlew build
         working-directory: ./backend
 

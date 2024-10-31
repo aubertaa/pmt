@@ -105,8 +105,7 @@ jobs:
       - name: Build and run Docker Compose
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-        run: |
-          docker-compose up --build -d --build-arg SENDGRID_API_KEY=$SENDGRID_API_KEY
+        run: docker-compose up --build -d
         working-directory: .
 
       - name: Wait for services to be healthy

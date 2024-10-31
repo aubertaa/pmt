@@ -12,6 +12,7 @@ import { UserInputFormComponent } from './components/user-input-form/user-input-
 import { provideHttpClient } from '@angular/common/http';
 import { ProjectItemComponent } from './projects/project-item/project-item.component';
 import { TaskboardComponent } from './components/taskboard/taskboard.component';
+import { TaskhistoryComponent } from './components/taskhistory/taskhistory.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { TaskboardComponent } from './components/taskboard/taskboard.component';
     UserInputFormComponent,
     ProjectItemComponent,
     TaskboardComponent,
+    TaskhistoryComponent,
   ],
   imports: [
     BrowserModule,

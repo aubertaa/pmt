@@ -48,7 +48,7 @@ export class ProjectItemComponent implements OnInit {
   }
 
   updateTask(updatedTask: Task, project: Project) {
-    this.taskService.updateTask(updatedTask, project.id);
+    this.taskService.updateTask(updatedTask, project.id, this.loggedInUserId);
     updatedTask.modified = false;
   }
 
@@ -89,10 +89,12 @@ export class ProjectItemComponent implements OnInit {
       taskformValues.taskPriority,
       "TODO",
       taskformValues.taskDueDate,
-      projectId
+      projectId,
+      this.loggedInUserId
     );
 
     formTask.reset();
+    this.taskPriority = 'MEDIUM';
     this.closeTaskForm();
   }
 
@@ -118,7 +120,7 @@ export class ProjectItemComponent implements OnInit {
   onAssignTaskToUser (user: User) {
     console.log('line clicked' + user.toString());
     if (this.toAssignTask) {
-      this.taskService.assignTaskToUser(user.userId, this.toAssignTask.id);
+      this.taskService.assignTaskToUser(user.userId, this.toAssignTask.id, this.loggedInUserId);
     }
     this.closeAssignPopin();
   }

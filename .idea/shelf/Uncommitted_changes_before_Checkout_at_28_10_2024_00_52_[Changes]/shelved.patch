@@ -1,0 +1,136 @@
+Index: backend/src/main/java/fr/aaubert/pmtbackend/controller/TaskController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package fr.aaubert.pmtbackend.controller;\r\n\r\n\r\nimport fr.aaubert.pmtbackend.model.*;\r\nimport fr.aaubert.pmtbackend.service.TaskService;\r\nimport jakarta.validation.Valid;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.http.HttpStatus;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport java.util.HashMap;\r\nimport java.util.List;\r\nimport java.util.Map;\r\nimport java.util.stream.Collectors;\r\n\r\n@RestController\r\n@RequestMapping(\"/api\")\r\n@CrossOrigin(\r\n        origins = {\"http://localhost:4200\", \"http://localhost:4201\"},\r\n        allowedHeaders = \"*\",\r\n        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})\r\npublic class TaskController {\r\n\r\n    @Autowired\r\n    private TaskService taskService;\r\n\r\n    // Endpoint pour créer une tâche dans un projet\r\n    @PostMapping(\"/task\")\r\n    @ResponseStatus(code = HttpStatus.CREATED)\r\n    public ResponseEntity<Task> createTask(@RequestBody @Valid TaskRequest taskRequest) {\r\n        Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId());\r\n        return ResponseEntity.ok(task);\r\n    }\r\n\r\n    // Endpoint pour assigner une tâche à un membre\r\n    @PostMapping(\"/task/assign\")\r\n    @ResponseStatus(code = HttpStatus.OK)\r\n    public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam(\"taskId\") Long taskId, @RequestParam(\"userId\") Long userId) {\r\n        TaskMember taskMember = taskService.assignTaskToUser(taskId, userId);\r\n        return ResponseEntity.ok(taskMember);\r\n    }\r\n\r\n\r\n    @GetMapping(\"/tasks\")\r\n    @ResponseStatus(code = HttpStatus.OK)\r\n    public ResponseEntity<List<Map<String, Object>>> getTasks() {\r\n        List<Map<String, Object>> taskMaps = taskService.getTasks().stream()\r\n                .map(task -> {\r\n                    Map<String, Object> taskMap = new HashMap<>();\r\n                    taskMap.put(\"id\", task.getId());\r\n                    taskMap.put(\"name\", task.getName());\r\n                    taskMap.put(\"description\", task.getDescription());\r\n                    taskMap.put(\"dueDate\", task.getDueDate());\r\n                    taskMap.put(\"priority\", task.getPriority());\r\n                    taskMap.put(\"status\", task.getStatus());\r\n                    taskMap.put(\"projectId\", task.getProject().getProjectId()); // Adding projectId\r\n                    taskMap.put(\"assignedTo\", taskService.getTaskMemberUser(task.getId())); // Adding taskMemberUserId\r\n\r\n                    return taskMap;\r\n                })\r\n                .collect(Collectors.toList());\r\n        return ResponseEntity.ok(taskMaps);\r\n    }\r\n\r\n    @GetMapping(\"/priorities\")\r\n    @ResponseStatus(code = HttpStatus.OK)\r\n    public List<TaskPriority> getAllPriorities() {\r\n        return List.of(TaskPriority.values());\r\n    }\r\n\r\n\r\n    @GetMapping(\"/statuses\")\r\n    @ResponseStatus(code = HttpStatus.OK)\r\n    public List<TaskStatus> getAllStatuses() {\r\n        return List.of(TaskStatus.values());\r\n    }\r\n\r\n}\r\n
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/controller/TaskController.java b/backend/src/main/java/fr/aaubert/pmtbackend/controller/TaskController.java
+--- a/backend/src/main/java/fr/aaubert/pmtbackend/controller/TaskController.java	(revision 94476a1a5f28cd13d48e00c53355927398341c41)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/controller/TaskController.java	(date 1730073081962)
+@@ -19,7 +19,7 @@
+ @CrossOrigin(
+         origins = {"http://localhost:4200", "http://localhost:4201"},
+         allowedHeaders = "*",
+-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
++        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
+ public class TaskController {
+ 
+     @Autowired
+@@ -33,6 +33,13 @@
+         return ResponseEntity.ok(task);
+     }
+ 
++    @PatchMapping("/task")
++    @ResponseStatus(code = HttpStatus.OK)
++    public ResponseEntity<Task> updateTask(@RequestBody @Valid Task task) {
++        Task updatedTask = taskService.updateTask(task);
++        return ResponseEntity.ok(updatedTask);
++    }
++
+     // Endpoint pour assigner une tâche à un membre
+     @PostMapping("/task/assign")
+     @ResponseStatus(code = HttpStatus.OK)
+Index: backend/src/test/java/fr/aaubert/pmtbackend/controller/TaskControllerTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package fr.aaubert.pmtbackend.controller;\r\n\r\n\r\nimport fr.aaubert.pmtbackend.model.*;\r\nimport fr.aaubert.pmtbackend.service.TaskService;\r\nimport com.fasterxml.jackson.databind.ObjectMapper;\r\nimport org.junit.jupiter.api.Test;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;\r\nimport org.springframework.boot.test.mock.mockito.MockBean;\r\nimport org.springframework.http.MediaType;\r\nimport org.springframework.test.web.servlet.MockMvc;\r\nimport org.springframework.test.web.servlet.request.MockMvcRequestBuilders;\r\nimport org.springframework.test.web.servlet.result.MockMvcResultMatchers;\r\n\r\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;\r\n\r\nimport java.util.Date;\r\nimport java.util.List;\r\n\r\nimport static org.mockito.ArgumentMatchers.any;\r\nimport static org.mockito.ArgumentMatchers.eq;\r\nimport static org.mockito.Mockito.when;\r\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;\r\nimport static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;\r\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;\r\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\r\n\r\n@WebMvcTest(TaskController.class)\r\nclass TaskControllerTest {\r\n\r\n    @Autowired\r\n    private MockMvc mockMvc;\r\n\r\n    @MockBean\r\n    private TaskService taskService;\r\n\r\n    @Autowired\r\n    private ObjectMapper objectMapper;\r\n\r\n    @Test\r\n    void createTask_shouldReturnTask_whenValidRequest() throws Exception {\r\n\r\n        Task task = new Task();\r\n        task.setId(1L);\r\n        task.setName(\"New Task\");\r\n        task.setDescription(\"Task description\");\r\n        task.setDueDate(new Date());\r\n        task.setPriority(TaskPriority.HIGH);\r\n\r\n        TaskRequest taskRequest = new TaskRequest();\r\n        taskRequest.setTask(task);\r\n        taskRequest.setProjectId(1L);\r\n\r\n\r\n        when(taskService.createTask(any(Task.class), eq(1L))).thenReturn(task);\r\n\r\n        mockMvc.perform(post(\"/api/task\")\r\n                        .contentType(MediaType.APPLICATION_JSON)\r\n                        .content(objectMapper.writeValueAsString(taskRequest)))\r\n                .andExpect(status().isOk())\r\n                .andExpect(jsonPath(\"$.id\").value(1L))\r\n                .andExpect(jsonPath(\"$.name\").value(\"New Task\"));\r\n    }\r\n\r\n    @Test\r\n    void assignTaskToUser_shouldReturnTaskMember_whenValidRequest() throws Exception {\r\n        // Arrange\r\n        TaskMember taskMember = new TaskMember();\r\n        taskMember.setId(1L);\r\n\r\n        when(taskService.assignTaskToUser(1L, 1L)).thenReturn(taskMember);\r\n\r\n        // Act & Assert\r\n        mockMvc.perform(post(\"/api/task/assign?taskId=1&userId=1\"))\r\n                .andExpect(status().isOk())\r\n                .andExpect(jsonPath(\"$.id\").value(1));\r\n    }\r\n\r\n    @Test\r\n    void getTasks_shouldReturnTasksList_whenValidRequest() throws Exception {\r\n\r\n        Project project = new Project();\r\n        project.setProjectId(1L);\r\n        project.setProjectName(\"Project 1\");\r\n        project.setDescription(\"Project description\");\r\n\r\n\r\n        Task task1 = new Task();\r\n        task1.setId(1L);\r\n        task1.setName(\"Task 1\");\r\n        task1.setProject(project);\r\n        Task task2 = new Task();\r\n        task2.setId(2L);\r\n        task2.setName(\"Task 2\");\r\n        task2.setProject(project);\r\n\r\n        List<Task> tasks = List.of(task1, task2);\r\n\r\n        when(taskService.getTasks()).thenReturn(tasks);\r\n        when(taskService. getTaskMemberUser(2L)).thenReturn(8L);\r\n\r\n        mockMvc.perform(get(\"/api/tasks\"))\r\n                .andExpect(status().isOk())\r\n                .andExpect(jsonPath(\"$.size()\").value(2))\r\n                .andExpect(jsonPath(\"$[0].name\").value(\"Task 1\"))\r\n                .andExpect(jsonPath(\"$[0].projectId\").value(1L))\r\n                .andExpect(jsonPath(\"$[0].assignedTo\").value(0L))\r\n                .andExpect(jsonPath(\"$[1].name\").value(\"Task 2\"))\r\n                .andExpect(jsonPath(\"$[1].projectId\").value(1L))\r\n                .andExpect(jsonPath(\"$[1].assignedTo\").value(8L));\r\n    }\r\n\r\n    @Test\r\n    void getAllPriorities_shouldReturnPrioritiesList_whenValidRequest() throws Exception {\r\n        mockMvc.perform(get(\"/api/priorities\"))\r\n                .andExpect(status().isOk())\r\n                .andExpect(jsonPath(\"$\").isArray());\r\n    }\r\n\r\n    @Test\r\n    void getAllStatuses_shouldReturnStatusesList_whenValidRequest() throws Exception {\r\n        mockMvc.perform(get(\"/api/statuses\"))\r\n                .andExpect(status().isOk())\r\n                .andExpect(jsonPath(\"$\").isArray());\r\n    }\r\n\r\n}\r\n
+===================================================================
+diff --git a/backend/src/test/java/fr/aaubert/pmtbackend/controller/TaskControllerTest.java b/backend/src/test/java/fr/aaubert/pmtbackend/controller/TaskControllerTest.java
+--- a/backend/src/test/java/fr/aaubert/pmtbackend/controller/TaskControllerTest.java	(revision 94476a1a5f28cd13d48e00c53355927398341c41)
++++ b/backend/src/test/java/fr/aaubert/pmtbackend/controller/TaskControllerTest.java	(date 1730073081988)
+@@ -125,4 +125,24 @@
+                 .andExpect(jsonPath("$").isArray());
+     }
+ 
++    @Test
++    void updateTask_shouldReturnTask_whenValidRequest() throws Exception {
++        Task task = new Task();
++        task.setId(1L);
++        task.setName("New Task");
++        task.setDescription("Task description");
++        task.setDueDate(new Date());
++        task.setPriority(TaskPriority.HIGH);
++
++        when(taskService.updateTask(any(Task.class))).thenReturn(task);
++
++        mockMvc.perform(post("/api/task")
++                        .contentType(MediaType.APPLICATION_JSON)
++                        .content(objectMapper.writeValueAsString(task)))
++                .andExpect(status().isOk())
++                .andExpect(jsonPath("$.id").value(1L))
++                .andExpect(jsonPath("$.name").value("New Task"));
++    }
++
++
+ }
+Index: backend/src/test/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImplTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package fr.aaubert.pmtbackend.service.impl;\r\n\r\n\r\nimport fr.aaubert.pmtbackend.model.*;\r\nimport fr.aaubert.pmtbackend.repository.ProjectRepository;\r\nimport fr.aaubert.pmtbackend.repository.TaskMemberRepository;\r\nimport fr.aaubert.pmtbackend.repository.TaskRepository;\r\nimport fr.aaubert.pmtbackend.repository.UserRepository;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\nimport org.mockito.InjectMocks;\r\nimport org.mockito.Mock;\r\nimport org.mockito.MockitoAnnotations;\r\n\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Optional;\r\n\r\nimport static org.junit.jupiter.api.Assertions.*;\r\nimport static org.mockito.Mockito.*;\r\n\r\nclass TaskServiceImplTest {\r\n\r\n    @InjectMocks\r\n    private TaskServiceImpl taskServiceImpl;\r\n\r\n    @Mock\r\n    private TaskRepository taskRepository;\r\n\r\n    @Mock\r\n    private TaskMemberRepository taskMemberRepository;\r\n\r\n    @Mock\r\n    private ProjectRepository projectRepository;\r\n\r\n    @Mock\r\n    private UserRepository userRepository;\r\n\r\n    @BeforeEach\r\n    void setUp() {\r\n        MockitoAnnotations.openMocks(this);\r\n    }\r\n\r\n    @Test\r\n    void createTask_shouldReturnTask_whenProjectExists() {\r\n        // Arrange\r\n        Project project = new Project();\r\n        project.setProjectId(1L);\r\n\r\n        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));\r\n\r\n        Task task = new Task();\r\n        task.setName(\"New Task\");\r\n        task.setDescription(\"Task description\");\r\n        task.setDueDate(new Date());\r\n        task.setPriority(TaskPriority.HIGH);\r\n        task.setStatus(TaskStatus.TODO);\r\n        task.setProject(project);\r\n\r\n        when(taskRepository.save(any(Task.class))).thenReturn(task);\r\n\r\n        // Act\r\n        Task createdTask = taskServiceImpl.createTask(task, 1L);\r\n\r\n        // Assert\r\n        assertNotNull(createdTask);\r\n        assertEquals(\"New Task\", createdTask.getName());\r\n        assertEquals(\"HIGH\", createdTask.getPriority().toString());\r\n        verify(taskRepository, times(1)).save(any(Task.class));\r\n    }\r\n\r\n    @Test\r\n    void assignTaskToUser_shouldReturnTaskMember_whenTaskAndUserExist() {\r\n        // Arrange\r\n        Task task = new Task();\r\n        task.setId(1L);\r\n\r\n        User user = new User();\r\n        user.setUserId(1L);\r\n\r\n        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));\r\n        when(userRepository.findById(1L)).thenReturn(Optional.of(user));\r\n\r\n        TaskMember taskMember = new TaskMember();\r\n        taskMember.setTask(task);\r\n        taskMember.setUser(user);\r\n\r\n        when(taskMemberRepository.save(any(TaskMember.class))).thenReturn(taskMember);\r\n\r\n        // Act\r\n        TaskMember assignedTaskMember = taskServiceImpl.assignTaskToUser(1L, 1L);\r\n\r\n        // Assert\r\n        assertNotNull(assignedTaskMember);\r\n        assertEquals(task, assignedTaskMember.getTask());\r\n        assertEquals(user, assignedTaskMember.getUser());\r\n        verify(taskMemberRepository, times(1)).save(any(TaskMember.class));\r\n    }\r\n\r\n    @Test\r\n    void getTaskMemberUser_shouldReturnTaskMember_whenTaskMemberExists() {\r\n        // Arrange\r\n        Task task = new Task();\r\n        task.setId(1L);\r\n\r\n        User user = new User();\r\n        user.setUserId(1L);\r\n\r\n        TaskMember taskMember = new TaskMember();\r\n        taskMember.setTask(task);\r\n        taskMember.setUser(user);\r\n\r\n        when(taskMemberRepository.findByTaskId(1L)).thenReturn(taskMember);\r\n\r\n        // Act\r\n        Long result = taskServiceImpl.getTaskMemberUser(1L);\r\n\r\n        // Assert\r\n        assertNotNull(result);\r\n        verify(taskMemberRepository, times(1)).getMemberUserIdByTaskId(1L);\r\n    }\r\n\r\n    @Test\r\n    void getTasks_shouldReturnTasks_whenTasksExist() {\r\n        // Arrange\r\n        Task task1 = new Task();\r\n        task1.setId(1L);\r\n        task1.setName(\"Task 1\");\r\n\r\n        Task task2 = new Task();\r\n        task2.setId(2L);\r\n        task2.setName(\"Task 2\");\r\n\r\n        List<Task> tasks = List.of(task1, task2);\r\n\r\n        when(taskRepository.findAll()).thenReturn(tasks);\r\n\r\n        // Act\r\n        List<Task> result = taskServiceImpl.getTasks();\r\n\r\n        // Assert\r\n        assertNotNull(result);\r\n        assertEquals(2, result.size());\r\n        verify(taskRepository, times(1)).findAll();\r\n    }\r\n\r\n    @Test\r\n    void assignTaskToUser_shouldUpdateTaskMember_whenTaskAlreadyHasUserAssigned() {\r\n        // Arrange\r\n        Task task = new Task();\r\n        task.setId(1L);\r\n\r\n        User user = new User();\r\n        user.setUserId(1L);\r\n\r\n        TaskMember taskMember = new TaskMember();\r\n        taskMember.setTask(task);\r\n        taskMember.setUser(user);\r\n\r\n        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));\r\n        when(userRepository.findById(1L)).thenReturn(Optional.of(user));\r\n        when(taskMemberRepository.findByTaskId(1L)).thenReturn(taskMember);\r\n\r\n        // Act\r\n        TaskMember assignedTaskMember = taskServiceImpl.assignTaskToUser(1L, 1L);\r\n\r\n        // Assert\r\n        verify(taskMemberRepository, times(1)).save(taskMember);\r\n    }\r\n\r\n    @Test\r\n    void createTask_shouldThrowException_whenProjectDoesNotExist() {\r\n        // Arrange\r\n\r\n        Task task = new Task();\r\n        task.setName(\"New Task\");\r\n        task.setDescription(\"Task description\");\r\n        task.setDueDate(new Date());\r\n        task.setPriority(TaskPriority.HIGH);\r\n        task.setStatus(TaskStatus.TODO);\r\n\r\n        when(projectRepository.findById(1L)).thenReturn(Optional.empty());\r\n\r\n        // Act & Assert\r\n        assertThrows(RuntimeException.class, () -> taskServiceImpl.createTask(task, 1L));\r\n    }\r\n\r\n    @Test\r\n    void assignTaskToUser_shouldThrowException_whenTaskOrUserDoesNotExist() {\r\n        // Arrange\r\n        when(taskRepository.findById(1L)).thenReturn(Optional.empty());\r\n\r\n        // Act & Assert\r\n        assertThrows(RuntimeException.class, () -> taskServiceImpl.assignTaskToUser(1L, 1L));\r\n    }\r\n\r\n    @Test\r\n    void getTasksByProjectId_shouldReturnTasks_whenProjectHasTasks() {\r\n        // Arrange\r\n        Long projectId = 1L;\r\n        Task task1 = new Task();\r\n        task1.setId(1L);\r\n        task1.setName(\"Task 1\");\r\n\r\n        Task task2 = new Task();\r\n        task2.setId(2L);\r\n        task2.setName(\"Task 2\");\r\n\r\n        List<Task> tasks = List.of(task1, task2);\r\n\r\n        when(taskRepository.findByProjectId(projectId)).thenReturn(tasks);\r\n\r\n        // Act\r\n        List<Task> result = taskServiceImpl.getTasksByProjectId(projectId);\r\n\r\n        // Assert\r\n        assertNotNull(result);\r\n        assertEquals(2, result.size());\r\n        verify(taskRepository, times(1)).findByProjectId(projectId);\r\n    }\r\n\r\n}\r\n
+===================================================================
+diff --git a/backend/src/test/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImplTest.java b/backend/src/test/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImplTest.java
+--- a/backend/src/test/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImplTest.java	(revision 94476a1a5f28cd13d48e00c53355927398341c41)
++++ b/backend/src/test/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImplTest.java	(date 1730073081947)
+@@ -219,4 +219,22 @@
+         verify(taskRepository, times(1)).findByProjectId(projectId);
+     }
+ 
++    @Test
++    void updateTask_shouldReturnUpdatedTask_whenTaskExists() {
++        // Arrange
++        Task task = new Task();
++        task.setId(1L);
++        task.setName("Task 1");
++
++        when(taskRepository.save(any(Task.class))).thenReturn(task);
++
++        // Act
++        Task updatedTask = taskServiceImpl.updateTask(task);
++
++        // Assert
++        assertNotNull(updatedTask);
++        assertEquals("Task 1", updatedTask.getName());
++        verify(taskRepository, times(1)).save(any(Task.class));
++    }
++
+ }
+Index: backend/src/main/java/fr/aaubert/pmtbackend/service/TaskService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package fr.aaubert.pmtbackend.service;\r\n\r\nimport fr.aaubert.pmtbackend.model.ProjectMember;\r\nimport fr.aaubert.pmtbackend.model.Task;\r\nimport fr.aaubert.pmtbackend.model.TaskMember;\r\nimport fr.aaubert.pmtbackend.model.User;\r\n\r\nimport java.util.Arrays;\r\nimport java.util.List;\r\n\r\npublic interface TaskService {\r\n\r\n    // Méthode pour créer une tâche dans un projet\r\n    Task createTask(Task task, Long projectId);\r\n\r\n    // Méthode pour assigner une tâche à un membre spécifique\r\n    TaskMember assignTaskToUser(Long taskId, Long userId);\r\n\r\n    // Méthode pour récupérer les tâches d'un projet spécifique\r\n    List<Task> getTasksByProjectId(Long projectId);\r\n\r\n    List<Task> getTasks();\r\n\r\n    Long getTaskMemberUser(Long task_id);\r\n}\r\n
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/service/TaskService.java b/backend/src/main/java/fr/aaubert/pmtbackend/service/TaskService.java
+--- a/backend/src/main/java/fr/aaubert/pmtbackend/service/TaskService.java	(revision 94476a1a5f28cd13d48e00c53355927398341c41)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/service/TaskService.java	(date 1730073081924)
+@@ -4,6 +4,7 @@
+ import fr.aaubert.pmtbackend.model.Task;
+ import fr.aaubert.pmtbackend.model.TaskMember;
+ import fr.aaubert.pmtbackend.model.User;
++import jakarta.validation.Valid;
+ 
+ import java.util.Arrays;
+ import java.util.List;
+@@ -22,4 +23,6 @@
+     List<Task> getTasks();
+ 
+     Long getTaskMemberUser(Long task_id);
++
++    Task updateTask( Task task);
+ }
+Index: backend/src/main/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package fr.aaubert.pmtbackend.service.impl;\r\n\r\nimport fr.aaubert.pmtbackend.model.*;\r\nimport fr.aaubert.pmtbackend.repository.ProjectRepository;\r\nimport fr.aaubert.pmtbackend.repository.TaskMemberRepository;\r\nimport fr.aaubert.pmtbackend.repository.TaskRepository;\r\nimport fr.aaubert.pmtbackend.repository.UserRepository;\r\nimport fr.aaubert.pmtbackend.service.TaskService;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\nimport java.util.Optional;\r\n\r\n@Service\r\npublic class TaskServiceImpl implements TaskService {\r\n\r\n    @Autowired\r\n    private TaskRepository taskRepository;\r\n\r\n    @Autowired\r\n    private TaskMemberRepository taskMemberRepository;\r\n\r\n    @Autowired\r\n    private ProjectRepository projectRepository;\r\n\r\n    @Autowired\r\n    private UserRepository userRepository;\r\n\r\n    // Méthode pour créer une tâche dans un projet\r\n    @Override\r\n    public Task createTask(Task task, Long projectId) {\r\n        Optional<Project> project = projectRepository.findById(projectId);\r\n        if (project.isPresent()) {\r\n            task.setProject(project.get());\r\n            return taskRepository.save(task);\r\n        }\r\n        throw new RuntimeException(\"Project not found\");\r\n    }\r\n\r\n    // Méthode pour assigner une tâche à un membre spécifique\r\n    @Override\r\n    public TaskMember assignTaskToUser(Long taskId, Long userId) {\r\n        Optional<Task> task = taskRepository.findById(taskId);\r\n        Optional<User> user = userRepository.findById(userId);\r\n\r\n        if (task.isPresent() && user.isPresent()) {\r\n            TaskMember taskMember = taskMemberRepository.findByTaskId(taskId);\r\n\r\n            if (taskMember != null) {\r\n                // Task already has a user assigned, update to new user\r\n                taskMember.setUser(user.get());\r\n            } else {\r\n                // No TaskMember exists, create a new one\r\n                taskMember = new TaskMember();\r\n                taskMember.setTask(task.get());\r\n                taskMember.setUser(user.get());\r\n            }\r\n            return taskMemberRepository.save(taskMember);\r\n\r\n        }\r\n        throw new RuntimeException(\"Task or User not found\");\r\n    }\r\n\r\n\r\n    // Méthode pour récupérer les tâches d'un projet spécifique\r\n    @Override\r\n    public List<Task> getTasksByProjectId(Long projectId) {\r\n        return taskRepository.findByProjectId(projectId);\r\n    }\r\n\r\n    @Override\r\n    public List<Task> getTasks() {\r\n        return taskRepository.findAll();\r\n    }\r\n\r\n    @Override\r\n    public Long getTaskMemberUser(Long task_id) {\r\n        return taskMemberRepository.getMemberUserIdByTaskId(task_id);\r\n    }\r\n\r\n}\r\n
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImpl.java b/backend/src/main/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImpl.java
+--- a/backend/src/main/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImpl.java	(revision 94476a1a5f28cd13d48e00c53355927398341c41)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/service/impl/TaskServiceImpl.java	(date 1730073081973)
+@@ -79,4 +79,9 @@
+         return taskMemberRepository.getMemberUserIdByTaskId(task_id);
+     }
+ 
++    @Override
++    public Task updateTask(Task task) {
++        return taskRepository.save(task);
++    }
++
+ }

@@ -232,3 +232,8 @@
 .priority-low {
   border-color: #28a745; /* Green */
 }
+
+.btn-assign {
+  display: table-cell;
+  vertical-align: middle;
+}

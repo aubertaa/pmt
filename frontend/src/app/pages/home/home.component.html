@@ -11,14 +11,40 @@
     </button>
   </div>
   <div class="position-absolute top-50 end-0 translate-middle-y">
+    <button
+      class="btn btn-black me-3"
+      title="Historique des tâches"
+      (click)="onShowHistory()"
+      *ngIf="isLoggedIn"
+    >
+      <i class="fa fa-history"></i>
+    </button>
+
+    <button
+      class="btn btn-black me-3"
+      id="toggleButton"
+      [ngClass]="{
+        'color-white': notificationsActive,
+        'color-black': !notificationsActive
+      }"
+      [title]="
+        notificationsActive
+          ? 'Désactiver les notifications'
+          : 'Activer les notifications'
+      "
+      (click)="toggleNotifications()"
+      *ngIf="isLoggedIn"
+    >
+      <i class="fa fa-bell"></i>
+    </button>
     <button class="btn btn-danger me-3" (click)="logout()" *ngIf="isLoggedIn">
       Se déconnecter
     </button>
   </div>
 </div>
 
-<div class="text-center mt-5">Bienvenue, vous êtes connecté !</div>
-<div class="container mt-5" *ngIf="!showTaskboard">
+<div class="text-center mt-5">Bienvenue, {{ getLoggedInUserName() | async }} vous êtes connecté !</div>
+<div class="container mt-5" *ngIf="!showTaskboard && !showHistory">
   <form class="row mb-3" (ngSubmit)="onAddProject(fproject)" #fproject="ngForm">
     <h1 class="text-center my-4">Liste des projets</h1>
     <div class="form-row align-items-center">
@@ -112,7 +138,24 @@
 <div class="container mt-5" *ngIf="showTaskboard">
   <div *ngIf="tasks$ | async as tasks">
     <div *ngIf="statuses$ | async as statuses">
-      <app-taskboard [tasks]="tasks" [statuses]="statuses"></app-taskboard>
+    <div *ngIf="users$ | async as users">
+      <app-taskboard [tasks]="tasks" [statuses]="statuses" [users]="users"></app-taskboard>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- history -->
+<div class="container mt-5" *ngIf="showHistory">
+  <div *ngIf="taskHistoryItems$ | async as taskHistoryItems">
+    <div *ngIf="users$ | async as users">
+      <div *ngIf="tasks$ | async as tasks">
+        <app-taskhistory
+          [taskHistoryItems]="taskHistoryItems"
+          [users]="users"
+          [tasks]="tasks"
+        ></app-taskhistory>
+      </div>
     </div>
   </div>
 </div>

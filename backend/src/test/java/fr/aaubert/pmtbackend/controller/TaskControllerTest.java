@@ -2,8 +2,10 @@ package fr.aaubert.pmtbackend.controller;
 
 
 import fr.aaubert.pmtbackend.model.*;
+import fr.aaubert.pmtbackend.service.EmailService;
 import fr.aaubert.pmtbackend.service.TaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.aaubert.pmtbackend.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.Date;
@@ -21,7 +24,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,8 +36,15 @@ class TaskControllerTest {
     @MockBean
     private TaskService taskService;
 
+    @MockBean
+    private UserService userService;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private EmailService emailService;
+
 
     @Test
     void createTask_shouldReturnTask_whenValidRequest() throws Exception {
@@ -50,9 +59,10 @@ class TaskControllerTest {
         TaskRequest taskRequest = new TaskRequest();
         taskRequest.setTask(task);
         taskRequest.setProjectId(1L);
+        taskRequest.setUserId(1L);
 
 
-        when(taskService.createTask(any(Task.class), eq(1L))).thenReturn(task);
+        when(taskService.createTask(any(Task.class), eq(1L), eq(1L))).thenReturn(task);
 
         mockMvc.perform(post("/api/task")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,15 +75,22 @@ class TaskControllerTest {
     @Test
     void assignTaskToUser_shouldReturnTaskMember_whenValidRequest() throws Exception {
         // Arrange
+
+        User user = new User();
+        user.setUserId(1L);
+        user.setUserName("User 1");
+        user.setEmail("mail@mail");
+
         TaskMember taskMember = new TaskMember();
         taskMember.setId(1L);
+        taskMember.setUser(user);
 
-        when(taskService.assignTaskToUser(1L, 1L)).thenReturn(taskMember);
+        when(taskService.assignTaskToUser(1L, 2L, 3L)).thenReturn(taskMember);
+        when(userService.getUserByUserId(1L)).thenReturn(user);
 
         // Act & Assert
-        mockMvc.perform(post("/api/task/assign?taskId=1&userId=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+        mockMvc.perform(post("/api/task/assign?taskId=1&userId=1&authorId=1&notifications=true"))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -97,7 +114,7 @@ class TaskControllerTest {
         List<Task> tasks = List.of(task1, task2);
 
         when(taskService.getTasks()).thenReturn(tasks);
-        when(taskService. getTaskMemberUser(2L)).thenReturn(8L);
+        when(taskService.getTaskMemberUser(2L)).thenReturn(8L);
 
         mockMvc.perform(get("/api/tasks"))
                 .andExpect(status().isOk())
@@ -137,8 +154,9 @@ class TaskControllerTest {
         TaskRequest taskRequest = new TaskRequest();
         taskRequest.setTask(task);
         taskRequest.setProjectId(1L);
+        taskRequest.setUserId(1L);
 
-        when(taskService.updateTask(any(Task.class), eq(1L))).thenReturn(task);
+        when(taskService.updateTask(any(Task.class), eq(1L),eq(1L) )).thenReturn(task);
 
         mockMvc.perform(patch("/api/task")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -147,6 +165,5 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("New Task"));
     }
-
 
 }

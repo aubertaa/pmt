@@ -1,6 +1,8 @@
 package fr.aaubert.pmtbackend.controller;
 
+import fr.aaubert.pmtbackend.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
@@ -17,6 +21,9 @@ public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Mock
+    private UserService userService;
 
     @Test
     void testRegister() throws Exception {
@@ -79,6 +86,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userName").value("johndoe"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("myEmail2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.notifications").value(false))
                 .andDo(print());
     }
 
@@ -113,7 +121,27 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].userName").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].password").doesNotExist())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].notifications").value(false))
                 .andDo(print());
+    }
+
+    @Test
+    void updateUser_withValidUserIdAndNotificationStatus_updatesNotificationStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/notification")
+                        .param("userId", "1")
+                        .param("notificationsActive", "true"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    void updateUser_withNullUserId_returnsBadRequest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/notification")
+                        .param("notificationsActive", "true"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andDo(print());
+
+        verify(userService, times(0)).setNotificationStatusForUserId(null, true);
     }
 
 }

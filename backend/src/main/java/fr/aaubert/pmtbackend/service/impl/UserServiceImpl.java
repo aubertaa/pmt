@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-//import java.util.List;
-//import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -47,6 +45,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
+    @Override
+    public void setNotificationStatusForUserId(Long userId, Boolean notificationsActive) {
+        userRepository.setNotificationStatusForUserId(userId, notificationsActive);
+    }
+
+    @Override
+    public User getUserByUserId(Long userId) {
+        return userRepository.findById(userId).orElseThrow(EntityDontExistException::new);
+    }
+
+    @Override
+    public List<String> getAllUsersEmailHavingNotificationsTrue() {
+        return userRepository.getAllUsersEmailHavingNotificationsTrue();
+    }
 
     @Override
     public void deleteUser(Long id) {

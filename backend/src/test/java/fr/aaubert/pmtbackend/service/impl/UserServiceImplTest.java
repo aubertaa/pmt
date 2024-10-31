@@ -1,5 +1,6 @@
 package fr.aaubert.pmtbackend.service.impl;
 
+import fr.aaubert.pmtbackend.exceptions.EntityDontExistException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.List;
 
 @SpringBootTest
 public class UserServiceImplTest {
@@ -68,6 +70,38 @@ public class UserServiceImplTest {
         assertEquals(user, foundUser);
 
     }
+
+
+    @Test
+    void setNotificationStatusForUserId_withValidUserId_updatesNotificationStatus() {
+        Long userId = 1L;
+        Boolean notificationsActive = true;
+
+        userService.setNotificationStatusForUserId(userId, notificationsActive);
+
+        verify(userRepository, times(1)).setNotificationStatusForUserId(userId, notificationsActive);
+    }
+
+
+    @Test
+    void testGetAllUsers() {
+        // Test case 1: Saving a new user
+        User user = new User();
+        user.setUserName("john.doe");
+        user.setEmail("mail@mail");
+        user.setPassword("password");
+        user.setUserId(456L);
+
+        when(userRepository.findAll()).thenReturn(List.of(user));
+
+        List<User> users = userService.getAllUsers();
+
+        assertEquals(1, users.size());
+        assertEquals(user, users.get(0));
+
+    }
+
+
 
 
 

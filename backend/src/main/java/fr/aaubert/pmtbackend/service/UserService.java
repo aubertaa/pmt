@@ -1,6 +1,7 @@
 package fr.aaubert.pmtbackend.service;
 
 import fr.aaubert.pmtbackend.model.User;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -18,5 +19,9 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    //User getUserById(Long userId);
+    void setNotificationStatusForUserId(Long userId, Boolean notificationsActive);
+
+    User getUserByUserId(Long userId);
+
+    List<String> getAllUsersEmailHavingNotificationsTrue();
 }

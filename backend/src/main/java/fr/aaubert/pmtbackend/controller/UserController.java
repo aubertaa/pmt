@@ -1,4 +1,5 @@
 package fr.aaubert.pmtbackend.controller;
+
 import fr.aaubert.pmtbackend.model.User;
 import fr.aaubert.pmtbackend.service.UserService;
 import jakarta.validation.Valid;
@@ -25,15 +26,15 @@ public class UserController {
 
     @PostMapping("/user")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long register(@RequestBody @Valid User user){
-       return userService.saveUser(user);
+    public Long register(@RequestBody @Valid User user) {
+        return userService.saveUser(user);
     }
 
 
     @GetMapping("/user")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<Map<String, Object>> getUserByUserName(@Param("userName") String userName){
-        User user =  userService.getUserByUserName(userName);
+    public ResponseEntity<Map<String, Object>> getUserByUserName(@Param("userName") String userName) {
+        User user = userService.getUserByUserName(userName);
 
         // Build response map with userId included
         Map<String, Object> response = new HashMap<>();
@@ -41,13 +42,14 @@ public class UserController {
         response.put("userName", user.getUserName());
         response.put("email", user.getEmail());
         response.put("password", user.getPassword());
+        response.put("notifications", user.getNotifications());
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<List<Map<String, Object>>> getUsers(){
+    public ResponseEntity<List<Map<String, Object>>> getUsers() {
         List<User> users = userService.getAllUsers();
 
         // Build response map with userId included
@@ -56,10 +58,16 @@ public class UserController {
             userMap.put("userId", user.getUserId());
             userMap.put("userName", user.getUserName());
             userMap.put("email", user.getEmail());
+            userMap.put("notifications", user.getNotifications());
             return userMap;
         }).toList();
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/user/notification")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void updateUser(@RequestParam("userId") Long userId, @RequestParam("notificationsActive") Boolean notificationsActive) {
+        userService.setNotificationStatusForUserId(userId, notificationsActive);
+    }
 
 }

@@ -92,7 +92,8 @@ describe('ProjectItemComponent', () => {
       'HIGH',
       'TODO',
       mockForm.value.taskDueDate,
-      1
+      1,
+      0
     );
     expect(mockForm.reset).toHaveBeenCalled();
   });
@@ -121,7 +122,7 @@ describe('ProjectItemComponent', () => {
 
     component.onAssignTaskToUser(mockUser);
 
-    expect(mockTaskService.assignTaskToUser).toHaveBeenCalledWith(1, 2);
+    expect(mockTaskService.assignTaskToUser).toHaveBeenCalledWith(1, 2, 0);
   });
 
   it('should delete a project', () => {
@@ -168,7 +169,7 @@ describe('ProjectItemComponent', () => {
 
     component.updateTask(task, project);
 
-    expect(mockTaskService.updateTask).toHaveBeenCalledWith(task, 2);
+    expect(mockTaskService.updateTask).toHaveBeenCalledWith(task, 2, 0);
     expect(task.modified).toBe(false);
   });
 

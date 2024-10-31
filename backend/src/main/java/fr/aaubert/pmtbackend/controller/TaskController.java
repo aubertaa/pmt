@@ -2,7 +2,9 @@ package fr.aaubert.pmtbackend.controller;
 
 
 import fr.aaubert.pmtbackend.model.*;
+import fr.aaubert.pmtbackend.service.EmailService;
 import fr.aaubert.pmtbackend.service.TaskService;
+import fr.aaubert.pmtbackend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,26 +27,43 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private UserService userService;
+
     // Endpoint pour créer une tâche dans un projet
     @PostMapping("/task")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<Task> createTask(@RequestBody @Valid TaskRequest taskRequest) {
-        Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId());
+        Task task = taskService.createTask(taskRequest.getTask(), taskRequest.getProjectId(), taskRequest.getUserId());
         return ResponseEntity.ok(task);
     }
 
     @PatchMapping("/task")
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<Task> updateTask(@RequestBody @Valid TaskRequest taskRequest) {
-        Task updatedTask = taskService.updateTask(taskRequest.getTask(), taskRequest.getProjectId());
+        Task updatedTask = taskService.updateTask(taskRequest.getTask(), taskRequest.getProjectId(), taskRequest.getUserId());
         return ResponseEntity.ok(updatedTask);
     }
 
     // Endpoint pour assigner une tâche à un membre
     @PostMapping("/task/assign")
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam("taskId") Long taskId, @RequestParam("userId") Long userId) {
-        TaskMember taskMember = taskService.assignTaskToUser(taskId, userId);
+    public ResponseEntity<TaskMember> assignTaskToUser(@RequestParam("taskId") Long taskId, @RequestParam("userId") Long userId, @RequestParam("authorId") Long authorId) {
+        TaskMember taskMember = taskService.assignTaskToUser(taskId, userId, authorId);
+
+        User user = userService.getUserByUserId(userId);
+        String subject = "Task assigned";
+        String body = "Task " + taskId + " has been assigned to " + user.getUserName() + ". Please check your PMT dashboard for more details.";
+
+        //get all users email having notifications = true
+        List<String> destEmails = userService.getAllUsersEmailHavingNotificationsTrue();
+        for (String toEmail : destEmails) {
+            emailService.sendEmail(toEmail, subject, body);
+        }
+
         return ResponseEntity.ok(taskMember);
     }
 
@@ -83,4 +102,9 @@ public class TaskController {
         return List.of(TaskStatus.values());
     }
 
+    @GetMapping("/tasks/history")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<TasksHistory> getTasksHistory() {
+        return taskService.getTasksHistory();
+    }
 }

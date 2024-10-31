@@ -16,6 +16,7 @@ describe('TaskService', () => {
       assignTaskToUser: jest.fn(),
       getTasks: jest.fn(),
       getPriorities: jest.fn(),
+      getUsers: jest.fn(),
       getStatuses: jest.fn(),
     } as unknown as jest.Mocked<ApiService>;
 
@@ -43,7 +44,7 @@ describe('TaskService', () => {
     it('should handle error when task creation fails', () => {
       apiServiceMock.createTask.mockReturnValue(throwError(() => new Error('Error')));
 
-      service.createTask('Task 1', 'Description', 'HIGH', 'TODO', new Date(), 1);
+      service.createTask('Task 1', 'Description', 'HIGH', 'TODO', new Date(), 1, 1);
 
       expect(toastServiceMock.addToast).toHaveBeenCalledWith('Task not created !');
     });
@@ -54,9 +55,9 @@ describe('TaskService', () => {
     it('should handle error when assigning task to user fails', () => {
       apiServiceMock.assignTaskToUser.mockReturnValue(throwError(() => new Error('Error')));
 
-      service.assignTaskToUser(1, 1);
+      service.assignTaskToUser(1, 1, 1);
 
-      expect(toastServiceMock.addToast).toHaveBeenCalledWith('Task not added to project !');
+      expect(toastServiceMock.addToast).toHaveBeenCalledWith('Task not assigned !');
     });
   });
 
@@ -124,4 +125,5 @@ describe('TaskService', () => {
       expect(toastServiceMock.addToast).toHaveBeenCalledWith('Statuses not fetched !');
     });
   });
+
 });

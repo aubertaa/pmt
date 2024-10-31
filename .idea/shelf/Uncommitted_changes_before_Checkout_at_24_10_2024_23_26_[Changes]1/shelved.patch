@@ -1,0 +1,412 @@
+Index: backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectRequest.java b/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectRequest.java
+new file mode 100644
+--- /dev/null	(date 1729802167230)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectRequest.java	(date 1729802167230)
+@@ -0,0 +1,27 @@
++package fr.aaubert.pmtbackend.model;
++
++import fr.aaubert.pmtbackend.model.Project;
++
++public class ProjectRequest {
++
++    private Project project;
++    private Long userId;  // Owner's user ID
++
++    // Getters and Setters
++
++    public Project getProject() {
++        return project;
++    }
++
++    public void setProject(Project project) {
++        this.project = project;
++    }
++
++    public Long getUserId() {
++        return userId;
++    }
++
++    public void setUserId(Long userId) {
++        this.userId = userId;
++    }
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectMemberRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectMemberRepository.java b/backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectMemberRepository.java
+new file mode 100644
+--- /dev/null	(date 1729803444395)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectMemberRepository.java	(date 1729803444395)
+@@ -0,0 +1,16 @@
++package fr.aaubert.pmtbackend.repository;
++
++import fr.aaubert.pmtbackend.model.Project;
++import fr.aaubert.pmtbackend.model.ProjectMember;
++import fr.aaubert.pmtbackend.model.ProjectMemberId;
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.data.jpa.repository.Query;
++import org.springframework.stereotype.Repository;
++
++import java.util.List;
++
++@Repository
++public interface ProjectMemberRepository extends JpaRepository<ProjectMember, ProjectMemberId> {
++    @Query("SELECT pm.project FROM ProjectMember pm WHERE pm.user.id = :userId")
++    List<Project> getProjectsByUserId(Long userId);  // Query all ProjectMembers for the user
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/service/impl/ProjectServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/service/impl/ProjectServiceImpl.java b/backend/src/main/java/fr/aaubert/pmtbackend/service/impl/ProjectServiceImpl.java
+new file mode 100644
+--- /dev/null	(date 1729805016614)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/service/impl/ProjectServiceImpl.java	(date 1729805016614)
+@@ -0,0 +1,83 @@
++package fr.aaubert.pmtbackend.service.impl;
++
++import fr.aaubert.pmtbackend.exceptions.EntityDontExistException;
++import fr.aaubert.pmtbackend.model.*;
++import fr.aaubert.pmtbackend.repository.ProjectMemberRepository;
++import fr.aaubert.pmtbackend.repository.ProjectRepository;
++import fr.aaubert.pmtbackend.repository.UserRepository;
++import fr.aaubert.pmtbackend.service.ProjectService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++import java.util.Optional;
++import java.util.stream.Collectors;
++
++//import java.util.List;
++//import java.util.Optional;
++
++@Service
++public class ProjectServiceImpl implements ProjectService {
++
++    @Autowired
++    private ProjectRepository projectRepository;
++
++    @Autowired
++    private ProjectMemberRepository projectMemberRepository;
++
++    @Autowired
++    private UserRepository userRepository;
++
++    public Long saveProjectWithOwner(Project project, Long userId) {
++
++        // check if user exists
++        User user = userRepository.findById(userId)
++                .orElseThrow(EntityDontExistException::new);
++
++        // save the project
++        Project savedProject = projectRepository.save(project);
++
++        // Create and save the association as OWNER
++        ProjectMember member  = new ProjectMember();
++        ProjectMemberId memberId = new ProjectMemberId();
++        memberId.setUserId(user.getUserId());
++        memberId.setProjectId(savedProject.getProjectId());
++        member.setId(memberId);
++        member.setUser(user);
++        member.setProject(savedProject);
++        member.setRole(UserRole.OWNER);
++
++        projectMemberRepository.save(member);
++
++        //Return the saved project's ID
++        return savedProject.getProjectId();
++    }
++
++    @Override
++    public Project getProjectByProjectName(String projectName) {
++
++        Optional<Project> project = Optional.ofNullable(projectRepository.findByProjectname(projectName));
++
++        // On trouve le project
++        if(project.isPresent()) {
++            return project.get();
++        }
++
++        //sinon on renvoie une exception
++        throw new EntityDontExistException();
++
++    }
++
++    @Override
++    public List<Project> getProjectsByUserId(Long userId) {
++
++        return projectMemberRepository.getProjectsByUserId(userId);
++
++    }
++
++    @Override
++    public void deleteProject(Long id) {
++        projectRepository.deleteById(id);
++    }
++
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/controller/ProjectController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/controller/ProjectController.java b/backend/src/main/java/fr/aaubert/pmtbackend/controller/ProjectController.java
+new file mode 100644
+--- /dev/null	(date 1729803563891)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/controller/ProjectController.java	(date 1729803563891)
+@@ -0,0 +1,42 @@
++package fr.aaubert.pmtbackend.controller;
++import fr.aaubert.pmtbackend.model.Project;
++import fr.aaubert.pmtbackend.model.ProjectRequest;
++import fr.aaubert.pmtbackend.service.ProjectService;
++import jakarta.validation.Valid;
++import lombok.AllArgsConstructor;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.data.repository.query.Param;
++import org.springframework.http.HttpStatus;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@AllArgsConstructor
++@RequestMapping("/api")
++@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
++public class ProjectController {
++    //will have here API endpoints for user management
++
++    @Autowired
++    private ProjectService projectService;
++
++    @PostMapping("/project")
++    @ResponseStatus(code = HttpStatus.CREATED)
++    public Long create(@RequestBody @Valid ProjectRequest projectRequest){
++        return projectService.saveProjectWithOwner(projectRequest.getProject(), projectRequest.getUserId());
++    }
++
++    @GetMapping("/project")
++    @ResponseStatus(code = HttpStatus.OK)
++    public Project getProjectByProjectName(@Param("projectName") String projectName){
++        return projectService.getProjectByProjectName(projectName);
++    }
++
++    @GetMapping("/projects/user/{userId}")
++    @ResponseStatus(code = HttpStatus.OK)
++    public List<Project> getProjectsByUserId(@PathVariable Long userId){
++        return projectService.getProjectsByUserId(userId);
++    }
++
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/model/UserRole.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/model/UserRole.java b/backend/src/main/java/fr/aaubert/pmtbackend/model/UserRole.java
+new file mode 100644
+--- /dev/null	(date 1729800756119)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/model/UserRole.java	(date 1729800756119)
+@@ -0,0 +1,6 @@
++package fr.aaubert.pmtbackend.model;
++
++public enum UserRole {
++    OWNER,
++    CONTRIBUTOR
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/model/Project.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/model/Project.java b/backend/src/main/java/fr/aaubert/pmtbackend/model/Project.java
+new file mode 100644
+--- /dev/null	(date 1729805045513)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/model/Project.java	(date 1729805045513)
+@@ -0,0 +1,36 @@
++package fr.aaubert.pmtbackend.model;
++
++import com.fasterxml.jackson.annotation.JsonIgnore;
++import jakarta.persistence.*;
++import jakarta.validation.constraints.NotNull;
++import lombok.Getter;
++import lombok.Setter;
++
++import java.util.Date;
++import java.util.Set;
++
++@Setter
++@Getter
++@Entity
++@Table(name = "projects", uniqueConstraints = @UniqueConstraint(columnNames = "projectName"))
++public class Project {
++
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    @JsonIgnore
++    private Long projectId;
++
++    @NotNull
++    private String projectName;
++
++    private String description;
++
++    private Date startDate;
++
++    // Define the relationship with ProjectMember
++    @OneToMany(mappedBy = "id.projectId", cascade = CascadeType.ALL)
++    @JsonIgnore
++    private Set<ProjectMember> projectMembers;
++
++    // Additional fields, constructors, getters, and setters
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/service/ProjectService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/service/ProjectService.java b/backend/src/main/java/fr/aaubert/pmtbackend/service/ProjectService.java
+new file mode 100644
+--- /dev/null	(date 1729802541067)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/service/ProjectService.java	(date 1729802541067)
+@@ -0,0 +1,16 @@
++package fr.aaubert.pmtbackend.service;
++
++import fr.aaubert.pmtbackend.model.Project;
++
++import java.util.List;
++
++public interface ProjectService {
++
++    List<Project> getProjectsByUserId(Long userId);
++
++    void deleteProject(Long id);
++
++    Project getProjectByProjectName(String projectName);
++
++    Long saveProjectWithOwner(Project project, Long userId);
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectRepository.java b/backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectRepository.java
+new file mode 100644
+--- /dev/null	(date 1729803681377)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/repository/ProjectRepository.java	(date 1729803681377)
+@@ -0,0 +1,21 @@
++package fr.aaubert.pmtbackend.repository;
++
++import fr.aaubert.pmtbackend.model.Project;
++
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.data.jpa.repository.Query;
++import org.springframework.stereotype.Repository;
++
++import java.util.List;
++
++
++@Repository
++public interface ProjectRepository extends JpaRepository<Project, Long> {
++
++    @Query("""
++                 FROM Project
++                 WHERE projectName = :projectName
++            """)
++    Project findByProjectname(String projectName);
++
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMemberId.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMemberId.java b/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMemberId.java
+new file mode 100644
+--- /dev/null	(date 1729804653656)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMemberId.java	(date 1729804653656)
+@@ -0,0 +1,33 @@
++package fr.aaubert.pmtbackend.model;
++
++import jakarta.persistence.Embeddable;
++import java.io.Serializable;
++import java.util.Objects;
++import jakarta.persistence.Column;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.Setter;
++
++@Setter
++@Getter
++@Embeddable
++@EqualsAndHashCode
++public class ProjectMemberId implements Serializable {
++
++    // Getters and setters
++    @Column(name = "user_id")
++    private Long userId;
++
++    @Column(name = "project_id")
++    private Long projectId;
++
++    // Default constructor
++    public ProjectMemberId() {}
++
++    public ProjectMemberId(Long userId, Long projectId) {
++        this.userId = userId;
++        this.projectId = projectId;
++    }
++
++
++}
+Index: backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMember.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMember.java b/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMember.java
+new file mode 100644
+--- /dev/null	(date 1729804113806)
++++ b/backend/src/main/java/fr/aaubert/pmtbackend/model/ProjectMember.java	(date 1729804113806)
+@@ -0,0 +1,32 @@
++package fr.aaubert.pmtbackend.model;
++
++import com.fasterxml.jackson.annotation.JsonIgnore;
++import jakarta.persistence.*;
++import jakarta.validation.constraints.NotNull;
++import lombok.Getter;
++import lombok.Setter;
++
++@Setter
++@Getter
++@Entity
++@Table(name = "project_members",
++        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "project_id"}))
++public class ProjectMember {
++
++    @EmbeddedId
++    private ProjectMemberId id;
++
++    @ManyToOne
++    @MapsId("userId")
++    @JoinColumn(name = "user_id")
++    private User user;
++
++    @ManyToOne
++    @MapsId("projectId")
++    @JoinColumn(name = "project_id")
++    private Project project;
++
++    @Enumerated(EnumType.STRING)  // Use STRING to save the enum name in the database
++    private UserRole role;
++
++}

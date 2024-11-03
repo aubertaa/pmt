@@ -1,0 +1,8 @@
+fr.aaubert.pmtbackend
+fr.aaubert.pmtbackend.controller
+fr.aaubert.pmtbackend.exceptions
+fr.aaubert.pmtbackend.init
+fr.aaubert.pmtbackend.model
+fr.aaubert.pmtbackend.repository
+fr.aaubert.pmtbackend.service
+fr.aaubert.pmtbackend.service.impl
